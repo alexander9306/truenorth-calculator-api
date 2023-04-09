@@ -24,7 +24,15 @@ export class UsersService {
     return this.userRepository.findOneBy({ id });
   }
 
-  update(id: number, updateUserDto: UpdateUserDto) {
-    return `This action updates a #${id} user`;
+  findOneByUserName(username: string) {
+    return this.userRepository.findOneBy({ username });
+  }
+
+  async update(id: number, updateUserDto: UpdateUserDto) {
+    const userToUpdate = await this.userRepository.findOneBy({ id });
+    if (updateUserDto.username) userToUpdate.username = updateUserDto.username;
+    if (updateUserDto.password) userToUpdate.password = updateUserDto.password;
+
+    return this.userRepository.save(userToUpdate);
   }
 }
