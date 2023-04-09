@@ -5,6 +5,9 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { UsersModule } from './users/users.module';
 import { OperationsModule } from './operations/operations.module';
 import { RecordsModule } from './records/records.module';
+import { User } from './users/entities/user.entity';
+import { Operation } from './operations/entities/operation.entity';
+import { Record } from './records/entities/record.entity';
 
 @Module({
   imports: [
@@ -13,6 +16,7 @@ import { RecordsModule } from './records/records.module';
       type: 'better-sqlite3',
       database: 'db.sqlite',
       synchronize: true,
+      entities: [User, Operation, Record],
     }),
     UsersModule,
     OperationsModule,
