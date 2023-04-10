@@ -1,4 +1,5 @@
-import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
+import { Node } from 'src/shared/entities/node.entity';
+import { Column, Entity } from 'typeorm';
 
 export enum OperationTypeEnum {
   ADDITION = 'addition',
@@ -10,10 +11,7 @@ export enum OperationTypeEnum {
 }
 
 @Entity()
-export class Operation {
-  @PrimaryGeneratedColumn()
-  id: number;
-
+export class Operation extends Node {
   @Column({
     type: 'enum',
     enum: OperationTypeEnum,

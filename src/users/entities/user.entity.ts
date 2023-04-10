@@ -1,4 +1,5 @@
-import { PrimaryGeneratedColumn, Column, Entity } from 'typeorm';
+import { Node } from 'src/shared/entities/node.entity';
+import { Column, Entity } from 'typeorm';
 
 export enum UserStatusEnum {
   ACTIVE = 'active',
@@ -6,10 +7,7 @@ export enum UserStatusEnum {
 }
 
 @Entity()
-export class User {
-  @PrimaryGeneratedColumn()
-  id: number;
-
+export class User extends Node {
   @Column({
     unique: true,
   })

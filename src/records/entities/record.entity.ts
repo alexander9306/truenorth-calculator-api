@@ -1,18 +1,10 @@
-import {
-  Column,
-  Entity,
-  JoinColumn,
-  OneToOne,
-  PrimaryGeneratedColumn,
-} from 'typeorm';
+import { Column, Entity, JoinColumn, OneToOne } from 'typeorm';
 import { Operation } from 'src/operations/entities/operation.entity';
 import { User } from 'src/users/entities/user.entity';
+import { Node } from 'src/shared/entities/node.entity';
 
 @Entity()
-export class Record {
-  @PrimaryGeneratedColumn()
-  id: number;
-
+export class Record extends Node {
   @Column('int')
   amount: number;
 

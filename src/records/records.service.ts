@@ -1,12 +1,14 @@
 import { Injectable } from '@nestjs/common';
-import { CreateRecordDto } from './dto/create-record.dto';
-import { UpdateRecordDto } from './dto/update-record.dto';
+import { Repository } from 'typeorm';
+import { Record } from './entities/record.entity';
+import { InjectRepository } from '@nestjs/typeorm';
 
 @Injectable()
 export class RecordsService {
-  create(createRecordDto: CreateRecordDto) {
-    return 'This action adds a new record';
-  }
+  constructor(
+    @InjectRepository(Record)
+    private recordRepository: Repository<Record>,
+  ) {}
 
   findAll() {
     return `This action returns all records`;
@@ -14,10 +16,6 @@ export class RecordsService {
 
   findOne(id: number) {
     return `This action returns a #${id} record`;
-  }
-
-  update(id: number, updateRecordDto: UpdateRecordDto) {
-    return `This action updates a #${id} record`;
   }
 
   remove(id: number) {

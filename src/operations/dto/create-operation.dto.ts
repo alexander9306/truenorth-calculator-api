@@ -1,14 +1,19 @@
 import { OperationTypeEnum } from '../entities/operation.entity';
-import { IsEnum, IsNumberString, ValidateIf } from 'class-validator';
+import { IsEnum, IsNumber, ValidateIf } from 'class-validator';
 
 export class CreateOperationDto {
   @IsEnum(OperationTypeEnum)
   type: OperationTypeEnum;
 
-  @IsNumberString()
+  @ValidateIf((v) => v.type !== OperationTypeEnum.RANDOM_STRING)
+  @IsNumber()
   value1: number;
 
-  @IsNumberString()
-  @ValidateIf((v) => v.value1 !== OperationTypeEnum.RANDOM_STRING)
+  @ValidateIf(
+    (v) =>
+      v.type !== OperationTypeEnum.RANDOM_STRING ||
+      v.type !== OperationTypeEnum.SQUARE_ROOT,
+  )
+  @IsNumber()
   value2?: number;
 }
