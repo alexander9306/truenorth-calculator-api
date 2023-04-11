@@ -1,3 +1,4 @@
+import { Exclude } from 'class-transformer';
 import { Node } from 'src/shared/entities/node.entity';
 import { Column, Entity } from 'typeorm';
 
@@ -14,10 +15,11 @@ export class User extends Node {
   username: string;
 
   @Column()
+  @Exclude()
   password: string;
 
   @Column({
-    type: 'enum',
+    type: 'simple-enum',
     enum: UserStatusEnum,
     default: UserStatusEnum.ACTIVE,
   })

@@ -1,10 +1,4 @@
-import {
-  Controller,
-  Get,
-  Post,
-  Body,
-  ForbiddenException,
-} from '@nestjs/common';
+import { Controller, Get, Post, Body } from '@nestjs/common';
 import { OperationsService } from './operations.service';
 import { CreateOperationDto } from './dto/create-operation.dto';
 
@@ -14,19 +8,7 @@ export class OperationsController {
 
   @Post()
   async create(@Body() createOperationDto: CreateOperationDto) {
-    try {
-      const res = await this.operationsService.create(1, createOperationDto);
-      if (res === null) {
-        throw new ForbiddenException(
-          'Insufficient balance to perform this operation',
-        );
-      }
-      return this.operationsService.create(1, createOperationDto);
-    } catch (error) {
-      throw new ForbiddenException(
-        'Insufficient balance to perform this operation',
-      );
-    }
+    return this.operationsService.create(1, createOperationDto);
   }
 
   @Get()

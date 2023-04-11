@@ -1,4 +1,4 @@
-import { Injectable, ForbiddenException } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { CreateOperationDto } from './dto/create-operation.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
@@ -7,11 +7,12 @@ import { HttpService } from '@nestjs/axios';
 import { Operation, OperationTypeEnum } from './entities/operation.entity';
 import { User } from 'src/users/entities/user.entity';
 import { Record } from 'src/records/entities/record.entity';
+import { CustomError } from 'src/shared/custom-error';
 
 @Injectable()
 export class OperationsService {
   constructor(
-    @InjectRepository(OperationsService)
+    @InjectRepository(Operation)
     private operationRepository: Repository<Operation>,
 
     @InjectRepository(User)
@@ -49,14 +50,10 @@ export class OperationsService {
     record.amount = operation.cost;
     record.date = new Date();
 
-    if (lastRecord) {
-      if (lastRecord.user_balance - operation.cost < 0) {
-        throw new Error('Insufficient balance to perform this operation');
-      }
-      record.user_balance = lastRecord.user_balance - operation.cost;
-    } else {
-      record.user_balance = this.userBalance - operation.cost;
-    }
+    record.user_balance = this.calculateUserBalance(
+      operation.cost,
+      lastRecord.user_balance,
+    );
 
     if (createOperationDto.type === OperationTypeEnum.RANDOM_STRING) {
       const { data: randomData } = await this.getRandomString();
@@ -77,6 +74,18 @@ export class OperationsService {
     return this.operationRepository.find();
   }
 
+  private calculateUserBalance(cost: number, lastUserBalance?: number) {
+    if (!lastUserBalance) {
+      return this.userBalance - cost;
+    }
+
+    if (lastUserBalance - cost < 0) {
+      throw new CustomError('INSUFFICIENT_BALANCE');
+    }
+
+    return lastUserBalance - cost;
+  }
+
   private calculateOperationResponse({
     type,
     value1,
@@ -93,8 +102,6 @@ export class OperationsService {
         return value1 / value2;
       case OperationTypeEnum.SQUARE_ROOT:
         return Math.sqrt(value1);
-      default:
-        break;
     }
   }
 

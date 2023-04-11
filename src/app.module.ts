@@ -1,5 +1,6 @@
 import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
+import { APP_FILTER } from '@nestjs/core';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { TypeOrmModule } from '@nestjs/typeorm';
@@ -10,6 +11,9 @@ import { User } from './users/entities/user.entity';
 import { Operation } from './operations/entities/operation.entity';
 import { Record } from './records/entities/record.entity';
 import { SharedModule } from './shared/shared.module';
+import { QueryErrorFilter } from './shared/filters/query-failed-error.filter';
+import { CustomErrorFilter } from './shared/filters/custom-error.filter';
+import { AuthModule } from './auth/auth.module';
 
 @Module({
   imports: [
@@ -25,8 +29,19 @@ import { SharedModule } from './shared/shared.module';
     OperationsModule,
     RecordsModule,
     SharedModule,
+    AuthModule,
   ],
   controllers: [AppController],
-  providers: [AppService],
+  providers: [
+    AppService,
+    {
+      provide: APP_FILTER,
+      useClass: QueryErrorFilter,
+    },
+    {
+      provide: APP_FILTER,
+      useClass: CustomErrorFilter,
+    },
+  ],
 })
 export class AppModule {}

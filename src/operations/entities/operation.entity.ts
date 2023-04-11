@@ -13,7 +13,7 @@ export enum OperationTypeEnum {
 @Entity()
 export class Operation extends Node {
   @Column({
-    type: 'enum',
+    type: 'simple-enum',
     enum: OperationTypeEnum,
   })
   type: OperationTypeEnum;
