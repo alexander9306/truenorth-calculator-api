@@ -7,7 +7,7 @@ import { HttpService } from '@nestjs/axios';
 import { Operation, OperationTypeEnum } from './entities/operation.entity';
 import { User } from 'src/users/entities/user.entity';
 import { Record } from 'src/records/entities/record.entity';
-import { CustomError } from 'src/shared/custom-error';
+import { InsufficientBalanceException } from 'src/errors/exceptions/insufficient-balance.exception';
 
 @Injectable()
 export class OperationsService {
@@ -80,7 +80,7 @@ export class OperationsService {
     }
 
     if (lastUserBalance - cost < 0) {
-      throw new CustomError('INSUFFICIENT_BALANCE');
+      throw new InsufficientBalanceException();
     }
 
     return lastUserBalance - cost;

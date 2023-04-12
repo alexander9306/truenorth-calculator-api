@@ -1,35 +1,44 @@
-import {
-  CanActivate,
-  ExecutionContext,
-  Injectable,
-  UnauthorizedException,
-} from '@nestjs/common';
+import { CanActivate, ExecutionContext, Injectable } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { Request } from 'express';
 import { ConfigService } from '@nestjs/config';
+import { Reflector } from '@nestjs/core';
+import { IS_PUBLIC_KEY } from 'src/shared/constants';
+import { InvalidTokenException } from 'src/errors/exceptions/invalid-token.exception';
+import { ExpiredTokenException } from 'src/errors/exceptions/expired-token.exception';
 
 @Injectable()
 export class AuthGuard implements CanActivate {
   constructor(
     private jwtService: JwtService,
     private configService: ConfigService,
+    private reflector: Reflector,
   ) {}
 
   async canActivate(context: ExecutionContext): Promise<boolean> {
+    const isPublic = this.reflector.getAllAndOverride<boolean>(IS_PUBLIC_KEY, [
+      context.getHandler(),
+      context.getClass(),
+    ]);
+    if (isPublic) {
+      return true;
+    }
+
     const request = context.switchToHttp().getRequest();
     const token = this.extractTokenFromHeader(request);
     if (!token) {
-      throw new UnauthorizedException();
+      throw new InvalidTokenException();
     }
     try {
       const payload = await this.jwtService.verifyAsync(token, {
-        secret: this.configService.get(<string>'SECRET_KEY' || 'MySecretKey'),
+        secret: this.configService.get<string>('SECRET_KEY') || 'MySecretKey',
       });
-      // 💡 We're assigning the payload to the request object here
-      // so that we can access it in our route handlers
       request['user'] = payload;
-    } catch {
-      throw new UnauthorizedException();
+    } catch (e) {
+      if (e.name === 'TokenExpiredError') {
+        throw new ExpiredTokenException();
+      }
+      throw new InvalidTokenException();
     }
     return true;
   }

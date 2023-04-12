@@ -1,5 +1,6 @@
-import { Injectable, UnauthorizedException } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
+import { InvalidCredentialsException } from 'src/errors/exceptions/invalid-credentials.exception';
 import { UsersService } from 'src/users/users.service';
 
 @Injectable()
@@ -14,8 +15,9 @@ export class AuthService {
 
     // In a more detailed app I would store only hashed password
     if (user?.password !== pass) {
-      throw new UnauthorizedException();
+      throw new InvalidCredentialsException();
     }
+
     const payload = { username: user.username, sub: user.id };
 
     return {

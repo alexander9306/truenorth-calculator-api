@@ -1,8 +1,6 @@
 import { Module } from '@nestjs/common';
-import { ConfigModule } from '@nestjs/config';
-import { APP_FILTER } from '@nestjs/core';
-import { AppController } from './app.controller';
-import { AppService } from './app.service';
+import { ConfigModule, ConfigService } from '@nestjs/config';
+import { APP_FILTER, APP_GUARD } from '@nestjs/core';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { UsersModule } from './users/users.module';
 import { OperationsModule } from './operations/operations.module';
@@ -10,10 +8,11 @@ import { RecordsModule } from './records/records.module';
 import { User } from './users/entities/user.entity';
 import { Operation } from './operations/entities/operation.entity';
 import { Record } from './records/entities/record.entity';
-import { SharedModule } from './shared/shared.module';
-import { QueryErrorFilter } from './shared/filters/query-failed-error.filter';
-import { CustomErrorFilter } from './shared/filters/custom-error.filter';
+import { DuplicateKeyExceptionFilter } from './errors/filters/duplicate-key-exception.filter';
+import { ExceptionToHttpExceptionFilter } from './errors/filters/exception-to-http-exception.filter';
 import { AuthModule } from './auth/auth.module';
+import { AuthGuard } from './auth/auth.guard';
+import { JwtModule } from '@nestjs/jwt';
 
 @Module({
   imports: [
@@ -25,22 +24,32 @@ import { AuthModule } from './auth/auth.module';
       entities: [User, Operation, Record],
     }),
     ConfigModule.forRoot(),
+    JwtModule.registerAsync({
+      imports: [ConfigModule],
+      useFactory: async (configService: ConfigService) => ({
+        global: true,
+        secret: configService.get<string>('SECRET_KEY') || 'MySecretKey',
+        signOptions: { expiresIn: '1h' },
+      }),
+      inject: [ConfigService],
+    }),
     UsersModule,
     OperationsModule,
     RecordsModule,
-    SharedModule,
     AuthModule,
   ],
-  controllers: [AppController],
   providers: [
-    AppService,
     {
       provide: APP_FILTER,
-      useClass: QueryErrorFilter,
+      useClass: DuplicateKeyExceptionFilter,
     },
     {
       provide: APP_FILTER,
-      useClass: CustomErrorFilter,
+      useClass: ExceptionToHttpExceptionFilter,
+    },
+    {
+      provide: APP_GUARD,
+      useClass: AuthGuard,
     },
   ],
 })

@@ -8,8 +8,8 @@ import { BaseExceptionFilter } from '@nestjs/core';
 import { QueryFailedError } from 'typeorm';
 
 @Catch(QueryFailedError)
-export class QueryErrorFilter extends BaseExceptionFilter {
-  public catch(exception, host: ArgumentsHost) {
+export class DuplicateKeyExceptionFilter extends BaseExceptionFilter {
+  public catch(exception: any, host: ArgumentsHost) {
     const detail = exception.detail;
 
     let handledException = exception;
