@@ -2,6 +2,7 @@ import { Controller, Get, Body, Patch, Param, Put } from '@nestjs/common';
 import { UsersService } from './users.service';
 import { UpdatePasswordDto } from './dto/update-password.dto';
 import { UserStatusEnum } from './entities/user.entity';
+import { UserId } from 'src/shared/decorators/user-id.decorator';
 
 @Controller('users')
 export class UsersController {
@@ -17,18 +18,18 @@ export class UsersController {
     return this.usersService.findOne(+id);
   }
 
-  @Patch(':id')
-  deactivate(@Param('id') id: string) {
-    return this.usersService.updateStatus(+id, UserStatusEnum.INACTIVE);
+  @Patch()
+  deactivate(@UserId() id: number) {
+    return this.usersService.updateStatus(id, UserStatusEnum.INACTIVE);
   }
 
-  @Patch(':id')
-  activate(@Param('id') id: string) {
-    return this.usersService.updateStatus(+id, UserStatusEnum.ACTIVE);
+  @Patch()
+  activate(@UserId() id: number) {
+    return this.usersService.updateStatus(id, UserStatusEnum.ACTIVE);
   }
 
-  @Put(':id')
-  password(@Param('id') id: string, @Body() updatePassDto: UpdatePasswordDto) {
-    return this.usersService.updatePassword(+id, updatePassDto.password);
+  @Put()
+  password(@UserId() id: number, @Body() updatePassDto: UpdatePasswordDto) {
+    return this.usersService.updatePassword(id, updatePassDto.password);
   }
 }
