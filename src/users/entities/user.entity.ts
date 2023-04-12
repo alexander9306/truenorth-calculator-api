@@ -1,11 +1,7 @@
 import { Exclude } from 'class-transformer';
 import { Node } from 'src/shared/entities/node.entity';
+import { StatusEnum } from 'src/shared/enums/status.enum';
 import { Column, Entity } from 'typeorm';
-
-export enum UserStatusEnum {
-  ACTIVE = 'active',
-  INACTIVE = 'inactive',
-}
 
 @Entity()
 export class User extends Node {
@@ -20,8 +16,8 @@ export class User extends Node {
 
   @Column({
     type: 'simple-enum',
-    enum: UserStatusEnum,
-    default: UserStatusEnum.ACTIVE,
+    enum: StatusEnum,
+    default: StatusEnum.ACTIVE,
   })
-  status: UserStatusEnum;
+  status: StatusEnum;
 }

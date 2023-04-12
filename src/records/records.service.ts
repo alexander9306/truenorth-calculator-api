@@ -2,6 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { Repository } from 'typeorm';
 import { Record } from './entities/record.entity';
 import { InjectRepository } from '@nestjs/typeorm';
+import { StatusEnum } from 'src/shared/enums/status.enum';
 
 @Injectable()
 export class RecordsService {
@@ -11,14 +12,17 @@ export class RecordsService {
   ) {}
 
   findAll() {
-    return `This action returns all records`;
+    return this.recordRepository.find();
   }
 
   findOne(id: number) {
-    return `This action returns a #${id} record`;
+    return this.recordRepository.findOneBy({ id });
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} record`;
+  async remove(id: number) {
+    return this.recordRepository.save({
+      id: id,
+      status: StatusEnum.INACTIVE,
+    });
   }
 }

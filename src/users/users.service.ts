@@ -5,8 +5,9 @@ import {
 } from '@nestjs/common';
 import { CreateUserDto } from './dto/create-user.dto';
 import { Repository } from 'typeorm';
-import { User, UserStatusEnum } from './entities/user.entity';
+import { User } from './entities/user.entity';
 import { InjectRepository } from '@nestjs/typeorm';
+import { StatusEnum } from 'src/shared/enums/status.enum';
 
 @Injectable()
 @UseInterceptors(ClassSerializerInterceptor)
@@ -21,7 +22,7 @@ export class UsersService {
   }
 
   findAll() {
-    return this.userRepository.find();
+    return this.userRepository.find({});
   }
 
   findOne(id: number) {
@@ -32,18 +33,17 @@ export class UsersService {
     return this.userRepository.findOneBy({ username });
   }
 
-  async updateStatus(id: number, status: UserStatusEnum) {
-    const userToUpdate = await this.userRepository.findOneBy({ id });
-    userToUpdate.status = status;
-
-    return this.userRepository.save(userToUpdate);
+  updateStatus(id: number, status: StatusEnum) {
+    return this.userRepository.save({
+      id,
+      status,
+    });
   }
 
-  async updatePassword(id: number, password: string) {
-    const userToUpdate = await this.userRepository.findOneBy({ id });
-
-    userToUpdate.password = password;
-
-    return this.userRepository.save(userToUpdate);
+  updatePassword(id: number, password: string) {
+    return this.userRepository.save({
+      id,
+      password,
+    });
   }
 }

@@ -1,8 +1,8 @@
 import { Controller, Get, Body, Patch, Param, Put } from '@nestjs/common';
 import { UsersService } from './users.service';
 import { UpdatePasswordDto } from './dto/update-password.dto';
-import { UserStatusEnum } from './entities/user.entity';
 import { UserId } from 'src/shared/decorators/user-id.decorator';
+import { StatusEnum } from 'src/shared/enums/status.enum';
 
 @Controller('users')
 export class UsersController {
@@ -20,12 +20,12 @@ export class UsersController {
 
   @Patch()
   deactivate(@UserId() id: number) {
-    return this.usersService.updateStatus(id, UserStatusEnum.INACTIVE);
+    return this.usersService.updateStatus(id, StatusEnum.INACTIVE);
   }
 
   @Patch()
   activate(@UserId() id: number) {
-    return this.usersService.updateStatus(id, UserStatusEnum.ACTIVE);
+    return this.usersService.updateStatus(id, StatusEnum.ACTIVE);
   }
 
   @Put()
