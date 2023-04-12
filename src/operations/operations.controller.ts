@@ -15,4 +15,9 @@ export class OperationsController {
   findAll() {
     return this.operationsService.findAll();
   }
+
+  @Get()
+  staringBalance() {
+    return this.operationsService.getStartingBalance();
+  }
 }

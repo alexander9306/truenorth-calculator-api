@@ -27,7 +27,7 @@ export class OperationsService {
   ) {}
 
   // Default User Balance
-  private readonly userBalance = 100;
+  private readonly defaultUserBalance = 100;
 
   async create(userId: number, createOperationDto: CreateOperationDto) {
     const user = await this.userRepository.findOneBy({ id: userId });
@@ -70,13 +70,17 @@ export class OperationsService {
     return record.operation_response;
   }
 
+  getStartingBalance() {
+    return this.defaultUserBalance;
+  }
+
   findAll() {
     return this.operationRepository.find();
   }
 
   private calculateUserBalance(cost: number, lastUserBalance?: number) {
     if (!lastUserBalance) {
-      return this.userBalance - cost;
+      return this.defaultUserBalance - cost;
     }
 
     if (lastUserBalance - cost < 0) {
