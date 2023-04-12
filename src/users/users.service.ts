@@ -4,7 +4,6 @@ import {
   UseInterceptors,
 } from '@nestjs/common';
 import { CreateUserDto } from './dto/create-user.dto';
-import { UpdateUserDto } from './dto/update-user.dto';
 import { Repository } from 'typeorm';
 import { User, UserStatusEnum } from './entities/user.entity';
 import { InjectRepository } from '@nestjs/typeorm';
@@ -40,11 +39,10 @@ export class UsersService {
     return this.userRepository.save(userToUpdate);
   }
 
-  async update(id: number, updateUserDto: UpdateUserDto) {
+  async updatePassword(id: number, password: string) {
     const userToUpdate = await this.userRepository.findOneBy({ id });
 
-    if (updateUserDto.username) userToUpdate.username = updateUserDto.username;
-    if (updateUserDto.password) userToUpdate.password = updateUserDto.password;
+    userToUpdate.password = password;
 
     return this.userRepository.save(userToUpdate);
   }
