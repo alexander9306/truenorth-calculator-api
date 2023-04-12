@@ -1,19 +1,16 @@
-import {
-  Body,
-  Controller,
-  Get,
-  HttpCode,
-  HttpStatus,
-  Post,
-  Request,
-} from '@nestjs/common';
+import { Body, Controller, HttpCode, HttpStatus, Post } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { SignInDto } from './dto/sign-in-dto.dto';
 import { IsPublic } from 'src/shared/decorators/is-public.decorator';
+import { UsersService } from 'src/users/users.service';
+import { CreateUserDto } from 'src/users/dto/create-user.dto';
 
 @Controller('auth')
 export class AuthController {
-  constructor(private authService: AuthService) {}
+  constructor(
+    private authService: AuthService,
+    private readonly usersService: UsersService,
+  ) {}
 
   @IsPublic()
   @HttpCode(HttpStatus.OK)
@@ -22,8 +19,8 @@ export class AuthController {
     return this.authService.signIn(username, password);
   }
 
-  @Get('profile')
-  getProfile(@Request() req) {
-    return req.user;
+  @Post()
+  signUp(@Body() createUserDto: CreateUserDto) {
+    return this.usersService.create(createUserDto);
   }
 }

@@ -6,6 +6,7 @@ import { Reflector } from '@nestjs/core';
 import { IS_PUBLIC_KEY } from 'src/shared/constants';
 import { InvalidTokenException } from 'src/errors/exceptions/invalid-token.exception';
 import { ExpiredTokenException } from 'src/errors/exceptions/expired-token.exception';
+import { JwtPayload } from './interfaces/jwt.payload.interface';
 
 @Injectable()
 export class AuthGuard implements CanActivate {
@@ -30,10 +31,10 @@ export class AuthGuard implements CanActivate {
       throw new InvalidTokenException();
     }
     try {
-      const payload = await this.jwtService.verifyAsync(token, {
+      const payload = await this.jwtService.verifyAsync<JwtPayload>(token, {
         secret: this.configService.get<string>('SECRET_KEY') || 'MySecretKey',
       });
-      request['user'] = payload;
+      request['userId'] = payload.sub;
     } catch (e) {
       if (e.name === 'TokenExpiredError') {
         throw new ExpiredTokenException();

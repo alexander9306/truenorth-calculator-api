@@ -2,6 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { InvalidCredentialsException } from 'src/errors/exceptions/invalid-credentials.exception';
 import { UsersService } from 'src/users/users.service';
+import { JwtPayload } from './interfaces/jwt.payload.interface';
 
 @Injectable()
 export class AuthService {
@@ -18,7 +19,7 @@ export class AuthService {
       throw new InvalidCredentialsException();
     }
 
-    const payload = { username: user.username, sub: user.id };
+    const payload: JwtPayload = { sub: user.id };
 
     return {
       access_token: await this.jwtService.signAsync(payload),
