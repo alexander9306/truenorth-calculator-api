@@ -5,24 +5,16 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { UsersModule } from './users/users.module';
 import { OperationsModule } from './operations/operations.module';
 import { RecordsModule } from './records/records.module';
-import { User } from './users/entities/user.entity';
-import { Operation } from './operations/entities/operation.entity';
-import { Record } from './records/entities/record.entity';
 import { DuplicateKeyExceptionFilter } from './errors/filters/duplicate-key-exception.filter';
 import { ExceptionToHttpExceptionFilter } from './errors/filters/exception-to-http-exception.filter';
 import { AuthModule } from './auth/auth.module';
 import { AuthGuard } from './auth/auth.guard';
 import { JwtModule } from '@nestjs/jwt';
+import { dataSourceOptions } from 'db/data-source';
 
 @Module({
   imports: [
-    TypeOrmModule.forRoot({
-      // For more info about the config: https://typeorm.io/data-source-options#common-data-source-options
-      type: 'better-sqlite3',
-      database: 'db.sqlite3',
-      synchronize: true,
-      entities: [User, Operation, Record],
-    }),
+    TypeOrmModule.forRoot(dataSourceOptions),
     ConfigModule.forRoot(),
     JwtModule.registerAsync({
       imports: [ConfigModule],

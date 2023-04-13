@@ -4,7 +4,7 @@
       "previewLimit": 50,
       "driver": "SQLite",
       "name": "new",
-      "database": "${workspaceFolder:calculator-api}/db.sqlite"
+      "database": "${workspaceFolder:calculator-api}/db/db.sqlite3"
     }
   ],
   "sqltools.useNodeRuntime": true
