@@ -1,10 +1,20 @@
-import { Controller, Get, Body, Patch, Param, Put } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Body,
+  Patch,
+  Param,
+  Put,
+  UseInterceptors,
+  ClassSerializerInterceptor,
+} from '@nestjs/common';
 import { UsersService } from './users.service';
 import { UpdatePasswordDto } from './dto/update-password.dto';
 import { UserId } from 'src/shared/decorators/user-id.decorator';
 import { StatusEnum } from 'src/shared/enums/status.enum';
 
 @Controller('users')
+@UseInterceptors(ClassSerializerInterceptor)
 export class UsersController {
   constructor(private readonly usersService: UsersService) {}
 
