@@ -1,7 +1,16 @@
-import { Controller, Get, Post, Body } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Query,
+  UseInterceptors,
+  ClassSerializerInterceptor,
+} from '@nestjs/common';
 import { OperationsService } from './operations.service';
 import { CreateOperationDto } from './dto/create-operation.dto';
 import { UserId } from 'src/shared/decorators/user-id.decorator';
+import { OperationOptionsDto } from './dto/operation-options.dto';
 
 @Controller('operations')
 export class OperationsController {
@@ -15,9 +24,10 @@ export class OperationsController {
     return this.operationsService.create(id, createOperationDto);
   }
 
+  @UseInterceptors(ClassSerializerInterceptor)
   @Get()
-  findAll() {
-    return this.operationsService.findAll();
+  findAll(@Query() operationOptionsDto: OperationOptionsDto) {
+    return this.operationsService.findAll(operationOptionsDto);
   }
 
   @Get()

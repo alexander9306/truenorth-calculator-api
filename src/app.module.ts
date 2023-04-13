@@ -41,11 +41,11 @@ import { JwtModule } from '@nestjs/jwt';
   providers: [
     {
       provide: APP_FILTER,
-      useClass: DuplicateKeyExceptionFilter,
+      useClass: ExceptionToHttpExceptionFilter,
     },
     {
       provide: APP_FILTER,
-      useClass: ExceptionToHttpExceptionFilter,
+      useClass: DuplicateKeyExceptionFilter,
     },
     {
       provide: APP_GUARD,

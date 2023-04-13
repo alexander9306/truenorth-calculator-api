@@ -26,7 +26,7 @@ export class RecordsService {
       filterValue,
       filterField,
     );
-    const { sortColumns, sortColumnRelations } = this.getSortColumn(
+    const { sortColumn, sortColumnRelations } = this.getSortColumn(
       sortField,
       sortDirection,
     );
@@ -41,7 +41,7 @@ export class RecordsService {
         skip,
         take: pageSize,
         relations: relationToAdd,
-        order: sortColumns,
+        order: sortColumn,
       }),
       this.recordRepository.count({ where }),
     ]);
@@ -57,24 +57,24 @@ export class RecordsService {
   }
 
   private getSortColumn(sortField: keyof Record, sortDirection) {
-    const sortColumns = {};
+    const sortColumn = {};
     const sortColumnRelations = {};
     switch (sortField) {
       case 'user':
-        sortColumns[sortField] = { username: sortDirection };
+        sortColumn[sortField] = { username: sortDirection };
         sortColumnRelations[sortField] = true;
         break;
       case 'operation':
-        sortColumns[sortField] = { type: sortDirection };
+        sortColumn[sortField] = { type: sortDirection };
         sortColumnRelations[sortField] = true;
         break;
       default:
-        sortColumns[sortField] = sortDirection;
+        sortColumn[sortField] = sortDirection;
         break;
     }
 
     return {
-      sortColumns,
+      sortColumn,
       sortColumnRelations,
     };
   }

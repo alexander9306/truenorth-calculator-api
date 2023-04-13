@@ -7,11 +7,13 @@ import {
   Put,
   UseInterceptors,
   ClassSerializerInterceptor,
+  Query,
 } from '@nestjs/common';
 import { UsersService } from './users.service';
 import { UpdatePasswordDto } from './dto/update-password.dto';
 import { UserId } from 'src/shared/decorators/user-id.decorator';
 import { StatusEnum } from 'src/shared/enums/status.enum';
+import { UserOptionsDto } from './dto/user-options.dto';
 
 @Controller('users')
 @UseInterceptors(ClassSerializerInterceptor)
@@ -19,8 +21,8 @@ export class UsersController {
   constructor(private readonly usersService: UsersService) {}
 
   @Get()
-  findAll() {
-    return this.usersService.findAll();
+  findAll(@Query() userOptionsDto: UserOptionsDto) {
+    return this.usersService.findAll(userOptionsDto);
   }
 
   @Get(':id')

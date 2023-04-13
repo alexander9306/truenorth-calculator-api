@@ -1,4 +1,12 @@
-import { Body, Controller, HttpCode, HttpStatus, Post } from '@nestjs/common';
+import {
+  Body,
+  ClassSerializerInterceptor,
+  Controller,
+  HttpCode,
+  HttpStatus,
+  Post,
+  UseInterceptors,
+} from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { SignInDto } from './dto/sign-in-dto.dto';
 import { IsPublic } from 'src/shared/decorators/is-public.decorator';
@@ -19,7 +27,9 @@ export class AuthController {
     return this.authService.signIn(username, password);
   }
 
-  @Post()
+  @UseInterceptors(ClassSerializerInterceptor)
+  @IsPublic()
+  @Post('signup')
   signUp(@Body() createUserDto: CreateUserDto) {
     return this.usersService.create(createUserDto);
   }

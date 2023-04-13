@@ -8,6 +8,8 @@ import { Operation, OperationTypeEnum } from './entities/operation.entity';
 import { User } from 'src/users/entities/user.entity';
 import { Record } from 'src/records/entities/record.entity';
 import { InsufficientBalanceException } from 'src/errors/exceptions/insufficient-balance.exception';
+import { OperationOptionsDto } from './dto/operation-options.dto';
+import { PaginatedDataDto } from 'src/shared/dto/paginated-data.dto';
 
 @Injectable()
 export class OperationsService {
@@ -74,8 +76,41 @@ export class OperationsService {
     return this.defaultUserBalance;
   }
 
-  findAll() {
-    return this.operationRepository.find();
+  async findAll({
+    pageNumber,
+    pageSize,
+    sortField,
+    sortDirection,
+    filterValue,
+    filterField,
+    skip,
+  }: OperationOptionsDto): Promise<PaginatedDataDto<Operation>> {
+    const where = {};
+    if (filterValue) {
+      where[filterField] = filterValue;
+    }
+
+    const sortColumn = {};
+    sortColumn[sortField] = sortDirection;
+
+    const [data, count] = await Promise.all([
+      this.operationRepository.find({
+        where,
+        skip,
+        take: pageSize,
+        order: sortColumn,
+      }),
+      this.operationRepository.count({ where }),
+    ]);
+
+    const totalPages = Math.ceil(count / pageSize);
+
+    return {
+      data,
+      pageNumber,
+      count,
+      totalPages,
+    };
   }
 
   private calculateUserBalance(cost: number, lastUserBalance?: number) {
