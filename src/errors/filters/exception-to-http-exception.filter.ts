@@ -15,8 +15,6 @@ export class ExceptionToHttpExceptionFilter extends BaseExceptionFilter {
   public catch(exception: any, host: ArgumentsHost) {
     let handledException: any;
 
-    console.log(2);
-
     switch (exception.constructor) {
       case InsufficientBalanceException:
         handledException = new ForbiddenException(

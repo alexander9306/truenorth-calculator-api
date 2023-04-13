@@ -14,10 +14,6 @@ export class UsersService {
     private userRepository: Repository<User>,
   ) {}
 
-  create(createUserDto: CreateUserDto) {
-    return this.userRepository.save(createUserDto);
-  }
-
   async findAll({
     pageNumber,
     pageSize,
@@ -63,17 +59,27 @@ export class UsersService {
     return this.userRepository.findOneBy({ username });
   }
 
-  updateStatus(id: number, status: StatusEnum) {
-    return this.userRepository.save({
-      id,
-      status,
-    });
+  async updateStatus(id: number, status: StatusEnum) {
+    const user = new User();
+    user.id = id;
+    user.status = status;
+
+    return this.userRepository.save(user);
+  }
+
+  async create(createUserDto: CreateUserDto): Promise<User> {
+    const user = new User();
+    user.password = createUserDto.password;
+    user.username = createUserDto.username;
+
+    return this.userRepository.save(user);
   }
 
   updatePassword(id: number, password: string) {
-    return this.userRepository.save({
-      id,
-      password,
-    });
+    const user = new User();
+    user.id = id;
+    user.password = password;
+
+    return this.userRepository.save(user);
   }
 }

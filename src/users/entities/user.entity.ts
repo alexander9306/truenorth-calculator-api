@@ -24,9 +24,4 @@ export class User extends Node {
     default: StatusEnum.ACTIVE,
   })
   status: StatusEnum;
-
-  constructor(partial: Partial<User>) {
-    super();
-    Object.assign(this, partial);
-  }
 }
