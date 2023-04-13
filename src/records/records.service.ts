@@ -13,6 +13,18 @@ export class RecordsService {
     private recordRepository: Repository<Record>,
   ) {}
 
+  findOne(id: number) {
+    return this.recordRepository.findOneBy({ id });
+  }
+
+  remove(id: number) {
+    const record = new Record();
+    record.id = id;
+    record.status = StatusEnum.INACTIVE;
+
+    return this.recordRepository.save(record);
+  }
+
   async findAll({
     pageNumber,
     pageSize,
@@ -104,16 +116,5 @@ export class RecordsService {
       where,
       whereConditionRelations,
     };
-  }
-
-  findOne(id: number) {
-    return this.recordRepository.findOneBy({ id });
-  }
-
-  remove(id: number) {
-    return this.recordRepository.save({
-      id: id,
-      status: StatusEnum.INACTIVE,
-    });
   }
 }

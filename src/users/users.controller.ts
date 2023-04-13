@@ -3,7 +3,6 @@ import {
   Get,
   Body,
   Patch,
-  Param,
   Put,
   UseInterceptors,
   ClassSerializerInterceptor,
@@ -25,23 +24,26 @@ export class UsersController {
     return this.usersService.findAll(userOptionsDto);
   }
 
-  @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.usersService.findOne(+id);
+  @Get('info')
+  getUserInfo(@UserId('id') id: number) {
+    return this.usersService.findOne(id);
   }
 
-  @Patch()
+  @Patch('deactivate')
   deactivate(@UserId() id: number) {
     return this.usersService.updateStatus(id, StatusEnum.INACTIVE);
   }
 
-  @Patch()
+  @Patch('activate')
   activate(@UserId() id: number) {
     return this.usersService.updateStatus(id, StatusEnum.ACTIVE);
   }
 
-  @Put()
-  password(@UserId() id: number, @Body() updatePassDto: UpdatePasswordDto) {
+  @Put('change/password')
+  changePassword(
+    @UserId() id: number,
+    @Body() updatePassDto: UpdatePasswordDto,
+  ) {
     return this.usersService.updatePassword(id, updatePassDto.password);
   }
 }

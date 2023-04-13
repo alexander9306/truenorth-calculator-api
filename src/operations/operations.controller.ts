@@ -30,7 +30,7 @@ export class OperationsController {
     return this.operationsService.findAll(operationOptionsDto);
   }
 
-  @Get()
+  @Get('default-balance')
   staringBalance() {
     return this.operationsService.getStartingBalance();
   }
