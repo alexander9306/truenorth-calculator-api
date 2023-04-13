@@ -19,7 +19,7 @@ import { JwtModule } from '@nestjs/jwt';
     TypeOrmModule.forRoot({
       // For more info about the config: https://typeorm.io/data-source-options#common-data-source-options
       type: 'better-sqlite3',
-      database: 'db.sqlite',
+      database: 'db.sqlite3',
       synchronize: true,
       entities: [User, Operation, Record],
     }),
