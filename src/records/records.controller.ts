@@ -1,12 +1,4 @@
-import {
-  Controller,
-  Get,
-  Param,
-  Delete,
-  Query,
-  UseInterceptors,
-  ClassSerializerInterceptor,
-} from '@nestjs/common';
+import { Controller, Get, Param, Delete, Query } from '@nestjs/common';
 import { RecordsService } from './records.service';
 import { RecordQueryOptionsDto } from './dto/record-query-options.dto';
 
@@ -14,7 +6,6 @@ import { RecordQueryOptionsDto } from './dto/record-query-options.dto';
 export class RecordsController {
   constructor(private readonly recordsService: RecordsService) {}
 
-  @UseInterceptors(ClassSerializerInterceptor)
   @Get()
   findAll(@Query() recordOptionsDto: RecordQueryOptionsDto) {
     return this.recordsService.findAll(recordOptionsDto);
