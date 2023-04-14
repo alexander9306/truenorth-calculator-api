@@ -7,8 +7,8 @@ export class RecordsController {
   constructor(private readonly recordsService: RecordsService) {}
 
   @Get()
-  findAll(@Query() recordOptionsDto: RecordQueryOptionsDto) {
-    return this.recordsService.findAll(recordOptionsDto);
+  findAll(@Query() recordQueryOptionsDto: RecordQueryOptionsDto) {
+    return this.recordsService.findAll(recordQueryOptionsDto);
   }
 
   @Get(':id')

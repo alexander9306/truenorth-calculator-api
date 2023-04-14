@@ -17,8 +17,8 @@ export class OperationsController {
   }
 
   @Get()
-  findAll(@Query() operationOptionsDto: OperationQueryOptionsDto) {
-    return this.operationsService.findAll(operationOptionsDto);
+  findAll(@Query() operationQueryOptionsDto: OperationQueryOptionsDto) {
+    return this.operationsService.findAll(operationQueryOptionsDto);
   }
 
   @Get('default-balance')
