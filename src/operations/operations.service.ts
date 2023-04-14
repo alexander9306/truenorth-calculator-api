@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { CreateOperationDto } from './dto/create-operation.dto';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { Like, Repository } from 'typeorm';
 import { ConfigService } from '@nestjs/config';
 import { HttpService } from '@nestjs/axios';
 import { Operation, OperationTypeEnum } from './entities/operation.entity';
@@ -10,6 +10,8 @@ import { Record } from 'src/records/entities/record.entity';
 import { InsufficientBalanceException } from 'src/errors/exceptions/insufficient-balance.exception';
 import { OperationOptionsDto } from './dto/operation-options.dto';
 import { PaginatedDataDto } from 'src/shared/dto/paginated-data.dto';
+import { RandomAPIResponse } from './interfaces/random-api-response.interface';
+import { RandomAPIOptions } from './interfaces/random-api-options.interface';
 
 @Injectable()
 export class OperationsService {
@@ -58,7 +60,7 @@ export class OperationsService {
     );
 
     if (createOperationDto.type === OperationTypeEnum.RANDOM_STRING) {
-      const { data: randomData } = await this.getRandomString();
+      const randomData = await this.getRandomString();
 
       record.operation_response = randomData;
     } else {
@@ -87,7 +89,7 @@ export class OperationsService {
   }: OperationOptionsDto): Promise<PaginatedDataDto<Operation>> {
     const where = {};
     if (filterValue) {
-      where[filterField] = filterValue;
+      where[filterField] = Like(`%${filterValue}%`);
     }
 
     const sortColumn = {};
@@ -144,7 +146,24 @@ export class OperationsService {
     }
   }
 
-  private getRandomString() {
-    return this.httpService.axiosRef.get(`request url`);
+  private async getRandomString() {
+    const options: RandomAPIOptions = {
+      jsonrpc: '2.0',
+      method: 'generateStrings',
+      params: {
+        apiKey: this.configService.get<string>('RANDOM_ORG_API_KEY'),
+        n: 1,
+        length: 10,
+        characters: '64Nlkerxa789rtuvas1235dawer',
+      },
+      id: 42,
+    };
+
+    const { data } = await this.httpService.axiosRef.post<RandomAPIResponse>(
+      'https://api.random.org/json-rpc/2/invoke',
+      options,
+    );
+
+    return data.result.random.data[0];
   }
 }

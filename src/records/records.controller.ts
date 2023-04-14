@@ -6,6 +6,8 @@ import {
   Query,
   UseInterceptors,
   ClassSerializerInterceptor,
+  UsePipes,
+  ValidationPipe,
 } from '@nestjs/common';
 import { RecordsService } from './records.service';
 import { RecordOptionsDto } from './dto/record-options.dto';
@@ -14,6 +16,7 @@ import { RecordOptionsDto } from './dto/record-options.dto';
 export class RecordsController {
   constructor(private readonly recordsService: RecordsService) {}
 
+  @UsePipes(new ValidationPipe({ transform: true }))
   @UseInterceptors(ClassSerializerInterceptor)
   @Get()
   findAll(@Query() recordOptionsDto: RecordOptionsDto) {

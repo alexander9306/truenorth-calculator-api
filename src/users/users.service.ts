@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { CreateUserDto } from './dto/create-user.dto';
-import { Repository } from 'typeorm';
+import { Like, Repository } from 'typeorm';
 import { User } from './entities/user.entity';
 import { InjectRepository } from '@nestjs/typeorm';
 import { StatusEnum } from 'src/shared/enums/status.enum';
@@ -25,7 +25,7 @@ export class UsersService {
   }: UserOptionsDto): Promise<PaginatedDataDto<User>> {
     const where = {};
     if (filterValue) {
-      where[filterField] = filterValue;
+      where[filterField] = Like(`%${filterValue}%`);
     }
 
     const sortColumn = {};

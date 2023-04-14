@@ -1,24 +1,22 @@
 import { BasePaginationSortAndFilter } from 'src/shared/pagination/interfaces/base-pagination-sort-and-filter.interface';
 import { User } from '../entities/user.entity';
 import { BasePaginationOptionsDto } from 'src/shared/dto/base-pagination-options.dto';
-import { IsIn, IsNotEmpty, ValidateIf } from 'class-validator';
-import { getProperties } from 'src/shared/decorators/property.decorator';
+import { IsIn, IsOptional, ValidateIf } from 'class-validator';
 
 export class UserOptionsDto
   extends BasePaginationOptionsDto
   implements BasePaginationSortAndFilter<User>
 {
-  @IsIn(getProperties(User))
+  @IsIn(['id', 'username', 'status'])
   sortField: keyof User;
 
   @IsIn(['ASC', 'DESC'])
   sortDirection: 'ASC' | 'DESC';
 
-  @ValidateIf((o) => typeof o.filterBy !== 'undefined')
-  @IsNotEmpty()
+  @IsOptional()
   filterValue?: string;
 
-  @ValidateIf((o) => typeof o.filter !== 'undefined')
-  @IsIn(getProperties(User))
+  @ValidateIf((o) => typeof o.filterValue !== 'undefined')
+  @IsIn(['id', 'username', 'status'])
   filterField?: keyof User;
 }

@@ -1,5 +1,5 @@
 import { Module } from '@nestjs/common';
-import { ConfigModule, ConfigService } from '@nestjs/config';
+import { ConfigModule } from '@nestjs/config';
 import { APP_FILTER, APP_GUARD } from '@nestjs/core';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { UsersModule } from './users/users.module';
@@ -16,15 +16,7 @@ import { dataSourceOptions } from 'db/data-source';
   imports: [
     TypeOrmModule.forRoot(dataSourceOptions),
     ConfigModule.forRoot(),
-    JwtModule.registerAsync({
-      imports: [ConfigModule],
-      useFactory: async (configService: ConfigService) => ({
-        global: true,
-        secret: configService.get<string>('SECRET_KEY') || 'MySecretKey',
-        signOptions: { expiresIn: '1h' },
-      }),
-      inject: [ConfigService],
-    }),
+    JwtModule,
     UsersModule,
     OperationsModule,
     RecordsModule,

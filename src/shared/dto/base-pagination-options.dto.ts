@@ -1,13 +1,14 @@
-import { IsInt, Max, Min } from 'class-validator';
+import { Transform } from 'class-transformer';
+import { Max, Min } from 'class-validator';
 
 export abstract class BasePaginationOptionsDto {
-  @IsInt()
   @Min(1)
+  @Transform(({ value }) => parseInt(value, 10))
   pageNumber = 1;
 
-  @IsInt()
   @Min(10)
   @Max(100)
+  @Transform(({ value }) => parseInt(value, 10))
   pageSize = 10;
 
   get skip(): number {
