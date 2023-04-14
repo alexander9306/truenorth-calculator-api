@@ -7,8 +7,6 @@ import {
   UseInterceptors,
   ClassSerializerInterceptor,
   Query,
-  UsePipes,
-  ValidationPipe,
 } from '@nestjs/common';
 import { UsersService } from './users.service';
 import { UpdatePasswordDto } from './dto/update-password.dto';
@@ -21,7 +19,6 @@ import { UserQueryOptionsDto } from './dto/user-query-options.dto';
 export class UsersController {
   constructor(private readonly usersService: UsersService) {}
 
-  @UsePipes(new ValidationPipe({ transform: true }))
   @Get()
   findAll(@Query() userOptionsDto: UserQueryOptionsDto) {
     return this.usersService.findAll(userOptionsDto);
