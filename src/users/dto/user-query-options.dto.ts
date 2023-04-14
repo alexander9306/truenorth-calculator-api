@@ -1,9 +1,9 @@
-import { BasePaginationSortAndFilter } from 'src/shared/pagination/interfaces/base-pagination-sort-and-filter.interface';
+import { BasePaginationSortAndFilter } from 'src/shared/interfaces/base-pagination-sort-and-filter.interface';
 import { User } from '../entities/user.entity';
 import { BasePaginationOptionsDto } from 'src/shared/dto/base-pagination-options.dto';
 import { IsIn, IsOptional, ValidateIf } from 'class-validator';
 
-export class UserOptionsDto
+export class UserQueryOptionsDto
   extends BasePaginationOptionsDto
   implements BasePaginationSortAndFilter<User>
 {

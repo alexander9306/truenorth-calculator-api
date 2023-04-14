@@ -10,7 +10,7 @@ import {
   ValidationPipe,
 } from '@nestjs/common';
 import { RecordsService } from './records.service';
-import { RecordOptionsDto } from './dto/record-options.dto';
+import { RecordQueryOptionsDto } from './dto/record-query-options.dto';
 
 @Controller('records')
 export class RecordsController {
@@ -19,7 +19,7 @@ export class RecordsController {
   @UsePipes(new ValidationPipe({ transform: true }))
   @UseInterceptors(ClassSerializerInterceptor)
   @Get()
-  findAll(@Query() recordOptionsDto: RecordOptionsDto) {
+  findAll(@Query() recordOptionsDto: RecordQueryOptionsDto) {
     return this.recordsService.findAll(recordOptionsDto);
   }
 

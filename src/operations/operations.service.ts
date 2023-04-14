@@ -8,8 +8,8 @@ import { Operation, OperationTypeEnum } from './entities/operation.entity';
 import { User } from 'src/users/entities/user.entity';
 import { Record } from 'src/records/entities/record.entity';
 import { InsufficientBalanceException } from 'src/errors/exceptions/insufficient-balance.exception';
-import { OperationOptionsDto } from './dto/operation-options.dto';
-import { PaginatedDataDto } from 'src/shared/dto/paginated-data.dto';
+import { OperationQueryOptionsDto } from './dto/operation-query-options.dto';
+import { CollectionResultDto } from 'src/shared/dto/collection-result.dto';
 import { RandomAPIResponse } from './interfaces/random-api-response.interface';
 import { RandomAPIOptions } from './interfaces/random-api-options.interface';
 
@@ -85,8 +85,7 @@ export class OperationsService {
     sortDirection,
     filterValue,
     filterField,
-    skip,
-  }: OperationOptionsDto): Promise<PaginatedDataDto<Operation>> {
+  }: OperationQueryOptionsDto): Promise<CollectionResultDto<Operation>> {
     const where = {};
     if (filterValue) {
       where[filterField] = Like(`%${filterValue}%`);
@@ -94,6 +93,8 @@ export class OperationsService {
 
     const sortColumn = {};
     sortColumn[sortField] = sortDirection;
+
+    const skip = (pageNumber - 1) * pageSize;
 
     const [data, count] = await Promise.all([
       this.operationRepository.find({

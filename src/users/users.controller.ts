@@ -14,7 +14,7 @@ import { UsersService } from './users.service';
 import { UpdatePasswordDto } from './dto/update-password.dto';
 import { UserId } from 'src/shared/decorators/user-id.decorator';
 import { StatusEnum } from 'src/shared/enums/status.enum';
-import { UserOptionsDto } from './dto/user-options.dto';
+import { UserQueryOptionsDto } from './dto/user-query-options.dto';
 
 @Controller('users')
 @UseInterceptors(ClassSerializerInterceptor)
@@ -23,7 +23,7 @@ export class UsersController {
 
   @UsePipes(new ValidationPipe({ transform: true }))
   @Get()
-  findAll(@Query() userOptionsDto: UserOptionsDto) {
+  findAll(@Query() userOptionsDto: UserQueryOptionsDto) {
     return this.usersService.findAll(userOptionsDto);
   }
 

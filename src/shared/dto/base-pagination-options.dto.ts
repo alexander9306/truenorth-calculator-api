@@ -10,8 +10,4 @@ export abstract class BasePaginationOptionsDto {
   @Max(100)
   @Transform(({ value }) => parseInt(value, 10))
   pageSize = 10;
-
-  get skip(): number {
-    return (this.pageNumber - 1) * this.pageSize;
-  }
 }

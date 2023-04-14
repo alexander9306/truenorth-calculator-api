@@ -4,8 +4,8 @@ import { Like, Repository } from 'typeorm';
 import { User } from './entities/user.entity';
 import { InjectRepository } from '@nestjs/typeorm';
 import { StatusEnum } from 'src/shared/enums/status.enum';
-import { UserOptionsDto } from './dto/user-options.dto';
-import { PaginatedDataDto } from 'src/shared/dto/paginated-data.dto';
+import { UserQueryOptionsDto } from './dto/user-query-options.dto';
+import { CollectionResultDto } from 'src/shared/dto/collection-result.dto';
 
 @Injectable()
 export class UsersService {
@@ -21,8 +21,7 @@ export class UsersService {
     sortDirection,
     filterValue,
     filterField,
-    skip,
-  }: UserOptionsDto): Promise<PaginatedDataDto<User>> {
+  }: UserQueryOptionsDto): Promise<CollectionResultDto<User>> {
     const where = {};
     if (filterValue) {
       where[filterField] = Like(`%${filterValue}%`);
@@ -30,6 +29,8 @@ export class UsersService {
 
     const sortColumn = {};
     sortColumn[sortField] = sortDirection;
+
+    const skip = (pageNumber - 1) * pageSize;
 
     const [data, count] = await Promise.all([
       this.userRepository.find({
@@ -67,7 +68,7 @@ export class UsersService {
     return this.userRepository.save(user);
   }
 
-  async create(createUserDto: CreateUserDto): Promise<User> {
+  async create(createUserDto: CreateUserDto) {
     const user = new User();
     user.password = createUserDto.password;
     user.username = createUserDto.username;

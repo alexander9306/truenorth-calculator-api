@@ -1,4 +1,4 @@
-export class PaginatedDataDto<T> {
+export interface CollectionResultDto<T> {
   data: T[];
   pageNumber: number;
   count: number;

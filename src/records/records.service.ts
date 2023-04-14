@@ -3,8 +3,8 @@ import { Like, Repository } from 'typeorm';
 import { Record } from './entities/record.entity';
 import { InjectRepository } from '@nestjs/typeorm';
 import { StatusEnum } from 'src/shared/enums/status.enum';
-import { RecordOptionsDto } from './dto/record-options.dto';
-import { PaginatedDataDto } from 'src/shared/dto/paginated-data.dto';
+import { RecordQueryOptionsDto } from './dto/record-query-options.dto';
+import { CollectionResultDto } from 'src/shared/dto/collection-result.dto';
 
 @Injectable()
 export class RecordsService {
@@ -32,8 +32,7 @@ export class RecordsService {
     sortDirection,
     filterValue,
     filterField,
-    skip,
-  }: RecordOptionsDto): Promise<PaginatedDataDto<Record>> {
+  }: RecordQueryOptionsDto): Promise<CollectionResultDto<Record>> {
     const { where, whereConditionRelations } = this.getFilterCondition(
       filterValue,
       filterField,
@@ -46,6 +45,7 @@ export class RecordsService {
       ...whereConditionRelations,
       ...sortColumnRelations,
     };
+    const skip = (pageNumber - 1) * pageSize;
 
     const [data, count] = await Promise.all([
       this.recordRepository.find({

@@ -12,7 +12,7 @@ import {
 import { OperationsService } from './operations.service';
 import { CreateOperationDto } from './dto/create-operation.dto';
 import { UserId } from 'src/shared/decorators/user-id.decorator';
-import { OperationOptionsDto } from './dto/operation-options.dto';
+import { OperationQueryOptionsDto } from './dto/operation-query-options.dto';
 
 @Controller('operations')
 export class OperationsController {
@@ -29,7 +29,7 @@ export class OperationsController {
   @UsePipes(new ValidationPipe({ transform: true }))
   @UseInterceptors(ClassSerializerInterceptor)
   @Get()
-  findAll(@Query() operationOptionsDto: OperationOptionsDto) {
+  findAll(@Query() operationOptionsDto: OperationQueryOptionsDto) {
     return this.operationsService.findAll(operationOptionsDto);
   }
 

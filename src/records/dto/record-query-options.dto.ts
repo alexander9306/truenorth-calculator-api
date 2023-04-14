@@ -1,9 +1,9 @@
-import { BasePaginationSortAndFilter } from 'src/shared/pagination/interfaces/base-pagination-sort-and-filter.interface';
+import { BasePaginationSortAndFilter } from 'src/shared/interfaces/base-pagination-sort-and-filter.interface';
 import { Record } from '../entities/record.entity';
 import { BasePaginationOptionsDto } from 'src/shared/dto/base-pagination-options.dto';
 import { IsIn, IsOptional, ValidateIf } from 'class-validator';
 
-export class RecordOptionsDto
+export class RecordQueryOptionsDto
   extends BasePaginationOptionsDto
   implements BasePaginationSortAndFilter<Record>
 {
