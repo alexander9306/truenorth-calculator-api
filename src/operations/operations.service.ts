@@ -54,7 +54,7 @@ export class OperationsService {
     record.amount = operation.cost;
     record.date = new Date();
 
-    record.user_balance = this.calculateUserBalance(
+    record.user_balance = this.calculateNewBalance(
       operation.cost,
       lastRecord.user_balance,
     );
@@ -72,6 +72,25 @@ export class OperationsService {
     await this.recordRepository.save(record);
 
     return record.operation_response;
+  }
+
+  async getCurrentBalance(userId: number) {
+    const user = await this.userRepository.findOneBy({ id: userId });
+
+    const lastRecord = await this.recordRepository.findOne({
+      where: {
+        user,
+      },
+      order: {
+        date: 'DESC',
+      },
+    });
+
+    if (!lastRecord) {
+      return this.defaultUserBalance;
+    }
+
+    return this.defaultUserBalance - lastRecord.user_balance;
   }
 
   getStartingBalance() {
@@ -116,7 +135,7 @@ export class OperationsService {
     };
   }
 
-  private calculateUserBalance(cost: number, lastUserBalance?: number) {
+  private calculateNewBalance(cost: number, lastUserBalance?: number) {
     if (!lastUserBalance) {
       return this.defaultUserBalance - cost;
     }

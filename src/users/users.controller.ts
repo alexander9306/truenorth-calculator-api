@@ -7,6 +7,7 @@ import {
   UseInterceptors,
   ClassSerializerInterceptor,
   Query,
+  Param,
 } from '@nestjs/common';
 import { UsersService } from './users.service';
 import { UpdatePasswordDto } from './dto/update-password.dto';
@@ -24,22 +25,22 @@ export class UsersController {
     return this.usersService.findAll(userOptionsDto);
   }
 
-  @Get('info')
+  @Get('getInfo')
   getUserInfo(@UserId('id') id: number) {
     return this.usersService.findOne(id);
   }
 
-  @Patch('deactivate')
-  deactivate(@UserId() id: number) {
-    return this.usersService.updateStatus(id, StatusEnum.INACTIVE);
+  @Patch('deactivate/:id')
+  deactivate(@Param() id: string) {
+    return this.usersService.updateStatus(+id, StatusEnum.INACTIVE);
   }
 
-  @Patch('activate')
-  activate(@UserId() id: number) {
-    return this.usersService.updateStatus(id, StatusEnum.ACTIVE);
+  @Patch('activate/:id')
+  activate(@Param() id: string) {
+    return this.usersService.updateStatus(+id, StatusEnum.ACTIVE);
   }
 
-  @Put('change/password')
+  @Put('changePassword')
   changePassword(
     @UserId() id: number,
     @Body() updatePassDto: UpdatePasswordDto,

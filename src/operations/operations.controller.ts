@@ -21,7 +21,12 @@ export class OperationsController {
     return this.operationsService.findAll(operationQueryOptionsDto);
   }
 
-  @Get('default-balance')
+  @Get('currentBalance')
+  currentBalance(@UserId() id: number) {
+    return this.operationsService.getCurrentBalance(id);
+  }
+
+  @Get('defaultBalance')
   staringBalance() {
     return this.operationsService.getStartingBalance();
   }

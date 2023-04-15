@@ -7,7 +7,7 @@ export class CreateOperationDto {
 
   @ValidateIf((v) => v.type !== OperationTypeEnum.RANDOM_STRING)
   @IsNumber()
-  value1: number;
+  value1?: number;
 
   @ValidateIf(
     (v) =>
