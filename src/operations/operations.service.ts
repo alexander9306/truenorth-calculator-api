@@ -147,22 +147,18 @@ export class OperationsService {
     return lastUserBalance - cost;
   }
 
-  private calculateOperationResponse({
-    type,
-    value1,
-    value2,
-  }: CreateOperationDto) {
+  private calculateOperationResponse({ type, num1, num2 }: CreateOperationDto) {
     switch (type) {
       case OperationTypeEnum.ADDITION:
-        return value1 + value2;
+        return num1 + num2;
       case OperationTypeEnum.SUBTRACTION:
-        return value1 - value2;
+        return num1 - num2;
       case OperationTypeEnum.MULTIPLICATION:
-        return value1 - value2;
+        return num1 - num2;
       case OperationTypeEnum.DIVISION:
-        return value1 / value2;
+        return num1 / num2;
       case OperationTypeEnum.SQUARE_ROOT:
-        return Math.sqrt(value1);
+        return Math.sqrt(num1);
     }
   }
 
