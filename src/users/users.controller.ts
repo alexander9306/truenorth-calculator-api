@@ -15,8 +15,8 @@ import { UserId } from 'src/shared/decorators/user-id.decorator';
 import { StatusEnum } from 'src/shared/enums/status.enum';
 import { UserQueryOptionsDto } from './dto/user-query-options.dto';
 
-@Controller('users')
 @UseInterceptors(ClassSerializerInterceptor)
+@Controller('users')
 export class UsersController {
   constructor(private readonly usersService: UsersService) {}
 
@@ -25,7 +25,7 @@ export class UsersController {
     return this.usersService.findAll(userOptionsDto);
   }
 
-  @Get('getInfo')
+  @Get('info')
   getUserInfo(@UserId('id') id: number) {
     return this.usersService.findOne(id);
   }
@@ -40,7 +40,7 @@ export class UsersController {
     return this.usersService.updateStatus(+id, StatusEnum.ACTIVE);
   }
 
-  @Put('changePassword')
+  @Put('password')
   changePassword(
     @UserId() id: number,
     @Body() updatePassDto: UpdatePasswordDto,
