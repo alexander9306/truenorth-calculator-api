@@ -8,7 +8,7 @@ export class OperationQueryOptionsDto
   implements BasePaginationSortAndFilter<Operation>
 {
   @IsIn(['id', 'type', 'cost'])
-  sortField: keyof Operation;
+  sortField: 'id' | 'type' | 'cost';
 
   @IsIn(['ASC', 'DESC'])
   sortDirection: 'ASC' | 'DESC';
@@ -18,5 +18,5 @@ export class OperationQueryOptionsDto
 
   @ValidateIf((o) => typeof o.filterValue !== 'undefined')
   @IsIn(['id', 'type', 'cost'])
-  filterField?: keyof Operation;
+  filterField?: 'id' | 'type' | 'cost';
 }

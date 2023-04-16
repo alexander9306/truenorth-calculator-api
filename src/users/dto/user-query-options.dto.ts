@@ -8,7 +8,7 @@ export class UserQueryOptionsDto
   implements BasePaginationSortAndFilter<User>
 {
   @IsIn(['id', 'username', 'status'])
-  sortField: keyof User;
+  sortField: 'id' | 'username' | 'status';
 
   @IsIn(['ASC', 'DESC'])
   sortDirection: 'ASC' | 'DESC';
@@ -18,5 +18,5 @@ export class UserQueryOptionsDto
 
   @ValidateIf((o) => typeof o.filterValue !== 'undefined')
   @IsIn(['id', 'username', 'status'])
-  filterField?: keyof User;
+  filterField?: 'id' | 'username' | 'status';
 }
