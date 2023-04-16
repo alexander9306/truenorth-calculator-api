@@ -13,22 +13,21 @@ import { IsPublic } from 'src/shared/decorators/is-public.decorator';
 import { UsersService } from 'src/users/users.service';
 import { CreateUserDto } from 'src/users/dto/create-user.dto';
 
+@IsPublic()
 @Controller('auth')
+@UseInterceptors(ClassSerializerInterceptor)
 export class AuthController {
   constructor(
     private authService: AuthService,
     private readonly usersService: UsersService,
   ) {}
 
-  @IsPublic()
   @HttpCode(HttpStatus.OK)
   @Post('login')
   signIn(@Body() { username, password }: SignInDto) {
     return this.authService.signIn(username, password);
   }
 
-  @UseInterceptors(ClassSerializerInterceptor)
-  @IsPublic()
   @Post('signup')
   signUp(@Body() createUserDto: CreateUserDto) {
     return this.usersService.create(createUserDto);
