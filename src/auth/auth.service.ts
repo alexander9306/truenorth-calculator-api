@@ -1,5 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
+import * as bcrypt from 'bcrypt';
 import { InvalidCredentialsException } from 'src/errors/exceptions/invalid-credentials.exception';
 import { UsersService } from 'src/users/users.service';
 import { JwtPayload } from './interfaces/jwt.payload.interface';
@@ -14,12 +15,13 @@ export class AuthService {
   async signIn(username: string, pass: string): Promise<any> {
     const user = await this.usersService.findOneByUserName(username);
 
-    // In a more detailed app I would store only hashed password
-    if (user?.password !== pass) {
+    const isMatch = user && (await bcrypt.compare(pass, user.password));
+
+    if (!isMatch) {
       throw new InvalidCredentialsException();
     }
 
-    const payload: JwtPayload = { sub: user.id };
+    const payload: JwtPayload = { sub: user.id, username: user.username };
 
     return {
       access_token: await this.jwtService.signAsync(payload),
