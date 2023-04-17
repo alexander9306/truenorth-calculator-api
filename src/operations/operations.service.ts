@@ -86,11 +86,10 @@ export class OperationsService {
       },
     });
 
-    if (!lastRecord) {
-      return this.defaultUserBalance;
-    }
-
-    return this.defaultUserBalance - lastRecord.user_balance;
+    return {
+      startedBalance: this.defaultUserBalance,
+      currentBalance: lastRecord?.user_balance ?? this.defaultUserBalance,
+    };
   }
 
   getStartingBalance() {
@@ -112,6 +111,9 @@ export class OperationsService {
 
     const sortColumn = {};
     sortColumn[sortField] = sortDirection;
+
+    console.log('pageNumber', pageNumber, typeof pageNumber);
+    console.log('pageSize', pageSize, typeof pageSize);
 
     const skip = (pageNumber - 1) * pageSize;
 

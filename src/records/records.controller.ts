@@ -1,4 +1,11 @@
-import { Controller, Get, Param, Delete, Query } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Param,
+  Delete,
+  Query,
+  ValidationPipe,
+} from '@nestjs/common';
 import { RecordsService } from './records.service';
 import { RecordQueryOptionsDto } from './dto/record-query-options.dto';
 
@@ -7,7 +14,10 @@ export class RecordsController {
   constructor(private readonly recordsService: RecordsService) {}
 
   @Get()
-  findAll(@Query() recordQueryOptionsDto: RecordQueryOptionsDto) {
+  findAll(
+    @Query(new ValidationPipe({ transform: true }))
+    recordQueryOptionsDto: RecordQueryOptionsDto,
+  ) {
     return this.recordsService.findAll(recordQueryOptionsDto);
   }
 

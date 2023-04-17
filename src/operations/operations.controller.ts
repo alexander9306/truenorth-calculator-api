@@ -1,4 +1,11 @@
-import { Controller, Get, Post, Body, Query } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Query,
+  ValidationPipe,
+} from '@nestjs/common';
 import { OperationsService } from './operations.service';
 import { CreateOperationDto } from './dto/create-operation.dto';
 import { UserId } from 'src/shared/decorators/user-id.decorator';
@@ -17,17 +24,15 @@ export class OperationsController {
   }
 
   @Get()
-  findAll(@Query() operationQueryOptionsDto: OperationQueryOptionsDto) {
+  findAll(
+    @Query(new ValidationPipe({ transform: true }))
+    operationQueryOptionsDto: OperationQueryOptionsDto,
+  ) {
     return this.operationsService.findAll(operationQueryOptionsDto);
   }
 
   @Get('balance')
   currentBalance(@UserId() id: number) {
     return this.operationsService.getCurrentBalance(id);
-  }
-
-  @Get('default-balance')
-  staringBalance() {
-    return this.operationsService.getStartingBalance();
   }
 }
