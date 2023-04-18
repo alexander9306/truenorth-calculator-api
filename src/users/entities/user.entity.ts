@@ -1,7 +1,8 @@
 import { Exclude } from 'class-transformer';
+import { Record } from 'src/records/entities/record.entity';
 import { Node } from 'src/shared/entities/node.entity';
 import { StatusEnum } from 'src/shared/enums/status.enum';
-import { Column, Entity } from 'typeorm';
+import { Column, Entity, OneToMany } from 'typeorm';
 
 @Entity()
 export class User extends Node {
@@ -20,4 +21,7 @@ export class User extends Node {
     default: StatusEnum.ACTIVE,
   })
   status: StatusEnum;
+
+  @OneToMany(() => Record, (record) => record.user)
+  records: Record[];
 }

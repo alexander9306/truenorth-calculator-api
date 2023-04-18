@@ -1,4 +1,4 @@
-import { Column, Entity, JoinColumn, OneToOne } from 'typeorm';
+import { Column, CreateDateColumn, Entity, ManyToOne } from 'typeorm';
 import { Operation } from 'src/operations/entities/operation.entity';
 import { User } from 'src/users/entities/user.entity';
 import { Node } from 'src/shared/entities/node.entity';
@@ -15,7 +15,7 @@ export class Record extends Node {
   @Column()
   operation_response: string;
 
-  @Column('date')
+  @CreateDateColumn()
   date: Date;
 
   @Column({
@@ -25,11 +25,9 @@ export class Record extends Node {
   })
   status: StatusEnum;
 
-  @OneToOne(() => Operation)
-  @JoinColumn()
+  @ManyToOne(() => Operation, (operation) => operation.records)
   operation: Operation;
 
-  @OneToOne(() => User)
-  @JoinColumn()
+  @ManyToOne(() => User, (user) => user.records)
   user: User;
 }

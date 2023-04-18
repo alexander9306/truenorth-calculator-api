@@ -5,6 +5,8 @@ import {
   Body,
   Query,
   ValidationPipe,
+  UseInterceptors,
+  ClassSerializerInterceptor,
 } from '@nestjs/common';
 import { OperationsService } from './operations.service';
 import { CreateOperationDto } from './dto/create-operation.dto';
@@ -23,6 +25,7 @@ export class OperationsController {
     return this.operationsService.create(id, createOperationDto);
   }
 
+  @UseInterceptors(ClassSerializerInterceptor)
   @Get()
   findAll(
     @Query(new ValidationPipe({ transform: true }))

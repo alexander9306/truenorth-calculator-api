@@ -11,7 +11,7 @@ export class CreateOperationDto {
 
   @ValidateIf(
     (v) =>
-      v.type !== OperationTypeEnum.RANDOM_STRING ||
+      v.type !== OperationTypeEnum.RANDOM_STRING &&
       v.type !== OperationTypeEnum.SQUARE_ROOT,
   )
   @IsNumber()

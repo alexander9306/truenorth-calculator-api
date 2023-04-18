@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { Like, Repository } from 'typeorm';
+import { LessThanOrEqual, Like, Repository } from 'typeorm';
 import { Record } from './entities/record.entity';
 import { InjectRepository } from '@nestjs/typeorm';
 import { StatusEnum } from 'src/shared/enums/status.enum';
@@ -73,7 +73,7 @@ export class RecordsService {
     const sortColumnRelations = {};
     switch (sortField) {
       case 'user':
-        sortColumn[sortField] = { username: sortDirection };
+        sortColumn[sortField] = { id: sortDirection };
         sortColumnRelations[sortField] = true;
         break;
       case 'operation':
@@ -92,20 +92,30 @@ export class RecordsService {
   }
 
   private getFilterCondition(filterValue?: string, filterField?: keyof Record) {
-    if (filterValue) {
-      return;
-    }
     const where = {};
-    const whereConditionRelations = {};
+    const whereConditionRelations = { user: true };
+
+    if (!filterValue) {
+      return {
+        where,
+        whereConditionRelations,
+      };
+    }
 
     switch (filterField) {
       case 'user':
-        where[filterField] = { username: Like(`%${filterValue}%`) };
+        const id = parseInt(filterValue, 10);
+        where[filterField] = { id: id };
         whereConditionRelations[filterField] = true;
         break;
       case 'operation':
         where[filterField] = { type: Like(`%${filterValue}%`) };
         whereConditionRelations[filterField] = true;
+        break;
+      case 'date':
+        const date = new Date(filterValue);
+        date.setDate(date.getDate() + 1);
+        where[filterField] = LessThanOrEqual(date);
         break;
       default:
         where[filterField] = Like(`%${filterValue}%`);

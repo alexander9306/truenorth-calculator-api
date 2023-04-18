@@ -1,5 +1,6 @@
+import { Record } from 'src/records/entities/record.entity';
 import { Node } from 'src/shared/entities/node.entity';
-import { Column, Entity } from 'typeorm';
+import { Column, Entity, OneToMany } from 'typeorm';
 
 export enum OperationTypeEnum {
   ADDITION = 'addition',
@@ -20,4 +21,7 @@ export class Operation extends Node {
 
   @Column('int')
   cost: number;
+
+  @OneToMany(() => Record, (record) => record.operation)
+  records: Record[];
 }

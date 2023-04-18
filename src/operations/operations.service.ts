@@ -34,14 +34,18 @@ export class OperationsService {
   private readonly defaultUserBalance = 100;
 
   async create(userId: number, createOperationDto: CreateOperationDto) {
-    const user = await this.userRepository.findOneBy({ id: userId });
+    const user = new User();
+    user.id = userId;
+
     const operation = await this.operationRepository.findOneBy({
       type: createOperationDto.type,
     });
 
     const lastRecord = await this.recordRepository.findOne({
       where: {
-        user,
+        user: {
+          id: user.id,
+        },
       },
       order: {
         date: 'DESC',
@@ -56,7 +60,7 @@ export class OperationsService {
 
     record.user_balance = this.calculateNewBalance(
       operation.cost,
-      lastRecord.user_balance,
+      lastRecord?.user_balance,
     );
 
     if (createOperationDto.type === OperationTypeEnum.RANDOM_STRING) {
@@ -71,7 +75,7 @@ export class OperationsService {
 
     await this.recordRepository.save(record);
 
-    return record.operation_response;
+    return { result: record.operation_response };
   }
 
   async getCurrentBalance(userId: number) {
@@ -112,9 +116,6 @@ export class OperationsService {
     const sortColumn = {};
     sortColumn[sortField] = sortDirection;
 
-    console.log('pageNumber', pageNumber, typeof pageNumber);
-    console.log('pageSize', pageSize, typeof pageSize);
-
     const skip = (pageNumber - 1) * pageSize;
 
     const [data, count] = await Promise.all([
@@ -138,7 +139,7 @@ export class OperationsService {
   }
 
   private calculateNewBalance(cost: number, lastUserBalance?: number) {
-    if (!lastUserBalance) {
+    if (typeof lastUserBalance === 'undefined') {
       return this.defaultUserBalance - cost;
     }
 
