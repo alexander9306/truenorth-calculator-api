@@ -6,7 +6,7 @@ export abstract class BasePaginationOptionsDto {
   @Transform(({ value }) => parseInt(value, 10))
   pageNumber = 1;
 
-  @Min(10)
+  @Min(5)
   @Max(100)
   @Transform(({ value }) => parseInt(value, 10))
   pageSize = 10;
