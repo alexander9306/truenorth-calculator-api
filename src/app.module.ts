@@ -11,6 +11,7 @@ import { AuthModule } from './auth/auth.module';
 import { JwtModule } from '@nestjs/jwt';
 import { dataSourceOptions } from 'db/data-source';
 import { JwtAuthGuard } from './auth/jwt-auth.guard';
+import { ThrottlerGuard, ThrottlerModule } from '@nestjs/throttler';
 
 @Module({
   imports: [
@@ -22,6 +23,10 @@ import { JwtAuthGuard } from './auth/jwt-auth.guard';
         synchronize: configService.get('NODE_ENV') === 'development',
       }),
       inject: [ConfigService],
+    }),
+    ThrottlerModule.forRoot({
+      ttl: 60,
+      limit: 10,
     }),
     JwtModule,
     UsersModule,
@@ -41,6 +46,10 @@ import { JwtAuthGuard } from './auth/jwt-auth.guard';
     {
       provide: APP_GUARD,
       useClass: JwtAuthGuard,
+    },
+    {
+      provide: APP_GUARD,
+      useClass: ThrottlerGuard,
     },
   ],
 })
