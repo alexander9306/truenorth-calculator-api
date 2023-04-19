@@ -3,7 +3,7 @@ import { MigrationInterface, QueryRunner } from 'typeorm';
 export class SeedOperations1681426423325 implements MigrationInterface {
   public async up(queryRunner: QueryRunner): Promise<void> {
     await queryRunner.query(`
-    INSERT INTO operation (type, cost)
+    INSERT INTO "operation" (type, cost)
             VALUES
             ('addition', 10),
             ('subtraction', 10),
@@ -16,7 +16,7 @@ export class SeedOperations1681426423325 implements MigrationInterface {
 
   public async down(queryRunner: QueryRunner): Promise<void> {
     await queryRunner.query(`
-            DELETE FROM operation
+            DELETE FROM "operation"
             WHERE type IN (
               'addition',
               'subtraction',
