@@ -34,6 +34,7 @@ export class UsersService {
 
     const skip = (pageNumber - 1) * pageSize;
 
+    // TODO: Change to implementation to Query builder so I can request data and count in one call, also for further improvement in the search queries.
     const [data, count] = await Promise.all([
       this.userRepository.find({
         where,
