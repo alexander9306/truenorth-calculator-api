@@ -180,7 +180,7 @@ export class OperationsService {
       case OperationTypeEnum.SUBTRACTION:
         return num1 - num2;
       case OperationTypeEnum.MULTIPLICATION:
-        return num1 - num2;
+        return num1 * num2;
       case OperationTypeEnum.DIVISION:
         return num1 / num2;
       case OperationTypeEnum.SQUARE_ROOT:
