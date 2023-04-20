@@ -1,6 +1,5 @@
 import { Module } from '@nestjs/common';
 import { HttpModule } from '@nestjs/axios';
-import { ConfigModule } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { OperationsService } from './operations.service';
 import { OperationsController } from './operations.controller';
@@ -13,7 +12,6 @@ import { Operation } from './entities/operation.entity';
   imports: [
     UsersModule,
     RecordsModule,
-    ConfigModule,
     HttpModule,
     TypeOrmModule.forFeature([Operation]),
   ],

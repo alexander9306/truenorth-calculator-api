@@ -2,7 +2,6 @@ import { Injectable } from '@nestjs/common';
 import { CreateOperationDto } from './dto/create-operation.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Like, Repository } from 'typeorm';
-import { ConfigService } from '@nestjs/config';
 import { HttpService } from '@nestjs/axios';
 import { Operation, OperationTypeEnum } from './entities/operation.entity';
 import { User } from 'src/users/entities/user.entity';
@@ -24,8 +23,6 @@ export class OperationsService {
 
     @InjectRepository(Record)
     private recordRepository: Repository<Record>,
-
-    private configService: ConfigService,
 
     private httpService: HttpService,
   ) {}
@@ -170,7 +167,7 @@ export class OperationsService {
       jsonrpc: '2.0',
       method: 'generateStrings',
       params: {
-        apiKey: this.configService.get<string>('RANDOM_ORG_API_KEY'),
+        apiKey: process.env.RANDOM_ORG_API_KEY,
         n: 1,
         length: 10,
         characters: '64Nlkerxa789rtuvas1235dawer',

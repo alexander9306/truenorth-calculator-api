@@ -4,7 +4,6 @@ useDotenv: true
 frameworkVersion: '3'
 
 org: alexander9306
-app: serverless-calculator-backend-prod-main
 
 plugins:
   - serverless-offline

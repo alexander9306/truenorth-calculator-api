@@ -1,5 +1,5 @@
 import { Module } from '@nestjs/common';
-import { ConfigModule, ConfigService } from '@nestjs/config';
+import { ConfigModule } from '@nestjs/config';
 import { APP_FILTER, APP_GUARD } from '@nestjs/core';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { UsersModule } from './users/users.module';
@@ -12,18 +12,18 @@ import { JwtModule } from '@nestjs/jwt';
 import { dataSourceOptions } from 'db/data-source';
 import { JwtAuthGuard } from './auth/jwt-auth.guard';
 import { ThrottlerGuard, ThrottlerModule } from '@nestjs/throttler';
+import { User } from './users/entities/user.entity';
+import { Operation } from './operations/entities/operation.entity';
+import { Record } from './records/entities/record.entity';
 
 @Module({
   imports: [
-    ConfigModule.forRoot(),
-    TypeOrmModule.forRootAsync({
-      imports: [ConfigModule],
-      useFactory: (configService: ConfigService) => ({
-        ...dataSourceOptions,
-        synchronize: configService.get('NODE_ENV') === 'development',
-        url: configService.get('PG_CONNECTION_STRING') ?? dataSourceOptions.url,
-      }),
-      inject: [ConfigService],
+    ConfigModule.forRoot({
+      isGlobal: true,
+    }),
+    TypeOrmModule.forRoot({
+      ...dataSourceOptions,
+      entities: [User, Operation, Record],
     }),
     ThrottlerModule.forRoot({
       ttl: 60,
