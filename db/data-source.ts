@@ -7,7 +7,7 @@ export const dataSourceOptions: PostgresConnectionOptions = {
   type: 'postgres',
   url:
     process.env.PG_CONNECTION_STRING ??
-    'postgres://postgres:postgrespw@localhost:3277',
+    'postgres://postgres:postgrespw@localhost:32770',
   synchronize: process.env.NODE_ENV === 'development',
   entities: ['dist/**/*.entity.js'],
   migrations: ['dist/db/migrations/*.js'],

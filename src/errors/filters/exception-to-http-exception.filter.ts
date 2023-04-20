@@ -7,8 +7,6 @@ import {
 import { BaseExceptionFilter } from '@nestjs/core';
 import { InsufficientBalanceException } from '../exceptions/insufficient-balance.exception';
 import { InvalidCredentialsException } from '../exceptions/invalid-credentials.exception';
-import { InvalidTokenException } from '../exceptions/invalid-token.exception';
-import { ExpiredTokenException } from '../exceptions/expired-token.exception';
 
 @Catch()
 export class ExceptionToHttpExceptionFilter extends BaseExceptionFilter {
@@ -25,12 +23,6 @@ export class ExceptionToHttpExceptionFilter extends BaseExceptionFilter {
         handledException = new UnauthorizedException(
           'Invalid username or password',
         );
-        break;
-      case InvalidTokenException:
-        handledException = new UnauthorizedException('Invalid token');
-        break;
-      case ExpiredTokenException:
-        handledException = new ForbiddenException('Token has expired');
         break;
       default:
         handledException = exception;
