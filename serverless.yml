@@ -6,7 +6,6 @@ frameworkVersion: '3'
 org: alexander9306
 
 plugins:
-  - serverless-plugin-warmup
   - serverless-offline
 
 provider:
