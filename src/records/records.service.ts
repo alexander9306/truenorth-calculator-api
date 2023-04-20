@@ -103,16 +103,35 @@ export class RecordsService {
     }
 
     switch (filterField) {
+      case 'id':
+      case 'amount':
+      case 'user_balance':
+        const value = parseInt(filterValue, 10);
+        if (isNaN(value)) break;
+
+        where[filterField] = value;
+        break;
       case 'user':
         const id = parseInt(filterValue, 10);
+        if (isNaN(id)) break;
+
         where[filterField] = { id: id };
-        whereConditionRelations[filterField] = true;
+        break;
+      case 'status':
+        const status = Object.values(StatusEnum).find(
+          (v) => v === (filterValue.toLowerCase() as any),
+        );
+        if (!status) break;
+
+        where[filterField] = status;
         break;
       case 'operation':
         where[filterField] = { type: Like(`%${filterValue}%`) };
         whereConditionRelations[filterField] = true;
         break;
       case 'date':
+        if (isNaN(Date.parse(filterField))) break;
+
         const date = new Date(filterValue);
         date.setDate(date.getDate() + 1);
         where[filterField] = LessThanOrEqual(date);

@@ -93,10 +93,6 @@ export class OperationsService {
     };
   }
 
-  getStartingBalance() {
-    return this.defaultUserBalance;
-  }
-
   async findAll({
     pageNumber,
     pageSize,
@@ -105,10 +101,9 @@ export class OperationsService {
     filterValue,
     filterField,
   }: OperationQueryOptionsDto): Promise<CollectionResultDto<Operation>> {
-    const where = {};
-    if (filterValue) {
-      where[filterField] = Like(`%${filterValue}%`);
-    }
+    const where = filterValue
+      ? this.getFilterCondition(filterValue, filterField)
+      : {};
 
     const sortColumn = {};
     sortColumn[sortField] = sortDirection;
@@ -133,6 +128,36 @@ export class OperationsService {
       count,
       totalPages,
     };
+  }
+
+  private getFilterCondition(
+    filterValue: string,
+    filterField?: keyof Operation,
+  ) {
+    const where = {};
+
+    switch (filterField) {
+      case 'id':
+      case 'cost':
+        const value = parseInt(filterValue, 10);
+        if (isNaN(value)) break;
+
+        where[filterField] = value;
+        break;
+      case 'type':
+        const type = Object.values(OperationTypeEnum).find(
+          (v) => v === (filterValue.toLowerCase() as any),
+        );
+        if (!type) break;
+
+        where[filterField] = type;
+        break;
+      default:
+        where[filterField] = Like(`%${filterValue}%`);
+        break;
+    }
+
+    return where;
   }
 
   private calculateNewBalance(cost: number, lastUserBalance?: number) {

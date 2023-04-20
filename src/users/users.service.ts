@@ -25,10 +25,9 @@ export class UsersService {
     filterValue,
     filterField,
   }: UserQueryOptionsDto): Promise<CollectionResultDto<User>> {
-    const where = {};
-    if (filterValue) {
-      where[filterField] = Like(`%${filterValue}%`);
-    }
+    const where = filterValue
+      ? this.getFilterCondition(filterValue, filterField)
+      : {};
 
     const sortColumn = {};
     sortColumn[sortField] = sortDirection;
@@ -53,6 +52,32 @@ export class UsersService {
       count,
       totalPages,
     };
+  }
+
+  private getFilterCondition(filterValue: string, filterField?: keyof User) {
+    const where = {};
+
+    switch (filterField) {
+      case 'id':
+        const value = parseInt(filterValue, 10);
+        if (isNaN(value)) break;
+
+        where[filterField] = value;
+        break;
+      case 'status':
+        const status = Object.values(StatusEnum).find(
+          (v) => v === (filterValue.toLowerCase() as any),
+        );
+        if (!status) break;
+
+        where[filterField] = status;
+        break;
+      default:
+        where[filterField] = Like(`%${filterValue}%`);
+        break;
+    }
+
+    return where;
   }
 
   findOne(id: number) {
