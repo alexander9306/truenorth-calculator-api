@@ -10,13 +10,16 @@ import { QueryFailedError } from 'typeorm';
 @Catch(QueryFailedError)
 export class DuplicateKeyExceptionFilter extends BaseExceptionFilter {
   public catch(exception: any, host: ArgumentsHost) {
-    const detail = exception.message;
+    const detail = exception.detail;
 
     let handledException = exception;
 
-    if (typeof detail === 'string' && detail.includes('UNIQUE')) {
-      const messageStart = exception.message.split('.')[1];
-      const errorMessage = `Duplicate key error: ${messageStart} already exists`;
+    if (
+      typeof detail === 'string' &&
+      exception.message.includes('duplicate key')
+    ) {
+      const key = detail.split(')=(')[0].split('(')[1];
+      const errorMessage = `${key} already exists`;
 
       handledException = new HttpException(errorMessage, HttpStatus.CONFLICT);
     }
