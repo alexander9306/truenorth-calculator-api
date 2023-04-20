@@ -37,7 +37,11 @@ lerna-debug.log*
 !.vscode/tasks.json
 !.vscode/launch.json
 !.vscode/extensions.json
+.vscode
 
 #enviroment files
 .env
 .env.*
+
+#Serverless files
+.serverless

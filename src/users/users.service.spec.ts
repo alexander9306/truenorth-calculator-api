@@ -6,7 +6,7 @@ import { getRepositoryToken } from '@nestjs/typeorm';
 import { UserQueryOptionsDto } from './dto/user-query-options.dto';
 import { CollectionResultDto } from 'src/shared/dto/collection-result.dto';
 import { StatusEnum } from 'src/shared/enums/status.enum';
-import * as bcrypt from 'bcrypt';
+import * as bcryptjs from 'bcryptjs';
 
 // Mock the UserRepository
 const mockUserRepository = () => ({
@@ -16,7 +16,7 @@ const mockUserRepository = () => ({
   save: jest.fn(),
 });
 
-jest.mock('bcrypt');
+jest.mock('bcryptjs');
 describe('UsersService', () => {
   let userService: UsersService;
   let userRepository: Repository<User>;
@@ -150,7 +150,7 @@ describe('UsersService', () => {
       createdUser.password = newUser.password;
       createdUser.status = StatusEnum.ACTIVE;
 
-      (bcrypt.hash as jest.Mock).mockResolvedValue(newUser.password);
+      (bcryptjs.hash as jest.Mock).mockResolvedValue(newUser.password);
 
       (userRepository as any).save.mockResolvedValue(createdUser);
 
@@ -169,7 +169,7 @@ describe('UsersService', () => {
       user.id = userId;
       user.password = 'oldpassword123';
 
-      (bcrypt.hash as jest.Mock).mockResolvedValue(newPassword);
+      (bcryptjs.hash as jest.Mock).mockResolvedValue(newPassword);
       (userRepository as any).save.mockResolvedValue({
         ...user,
         password: newPassword,

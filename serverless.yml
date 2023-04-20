@@ -1,0 +1,32 @@
+service: serverless-calculator-backend
+useDotenv: true
+
+frameworkVersion: '3'
+
+org: alexander9306
+app: serverless-calculator-backend-prod-main
+
+plugins:
+  - serverless-offline
+
+provider:
+  name: aws
+  runtime: nodejs18.x
+  region: us-east-1
+  environment:
+    RANDOM_ORG_API_KEY: ${env:RANDOM_ORG_API_KEY}
+    JWT_SECRET: ${env:JWT_SECRET}
+    JWT_EXPIRATION_TIME: ${env:JWT_EXPIRATION_TIME}
+    PG_CONNECTION_STRING: ${env:PG_CONNECTION_STRING}
+    NODE_ENV: ${env:NODE_ENV}
+
+functions:
+  main:
+    handler: dist/main.handler
+    events:
+      - http:
+          method: ANY
+          path: /
+      - http:
+          method: ANY
+          path: '{proxy+}'

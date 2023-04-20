@@ -21,6 +21,7 @@ import { ThrottlerGuard, ThrottlerModule } from '@nestjs/throttler';
       useFactory: (configService: ConfigService) => ({
         ...dataSourceOptions,
         synchronize: configService.get('NODE_ENV') === 'development',
+        url: configService.get('PG_CONNECTION_STRING') ?? dataSourceOptions.url,
       }),
       inject: [ConfigService],
     }),
