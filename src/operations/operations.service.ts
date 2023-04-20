@@ -28,7 +28,8 @@ export class OperationsService {
   ) {}
 
   // Default User Balance
-  private readonly defaultUserBalance = 100;
+  private readonly defaultUserBalance =
+    parseInt(process.env.DEFAULT_BALANCE, 10) || 150;
 
   async create(userId: number, createOperationDto: CreateOperationDto) {
     const user = new User();
