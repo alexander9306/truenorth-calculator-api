@@ -10,12 +10,13 @@ async function bootstrap() {
   const app = await NestFactory.create(AppModule);
   app.use(helmet());
   app.useGlobalPipes(new ValidationPipe());
-  app.enableCors();
+  const configService: ConfigService = app.get(ConfigService);
+
+  app.enableCors({ origin: configService.get('CORS_ORIGIN') ?? true });
   app.enableVersioning({
     type: VersioningType.URI,
     defaultVersion: '1',
   });
-  const configService: ConfigService = app.get(ConfigService);
 
   await app.listen(configService.get('PORT') || 3000);
 
