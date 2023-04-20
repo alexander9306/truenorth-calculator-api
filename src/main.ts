@@ -12,7 +12,7 @@ async function bootstrap() {
   app.useGlobalPipes(new ValidationPipe());
   const configService: ConfigService = app.get(ConfigService);
 
-  app.enableCors({ origin: configService.get('CORS_ORIGIN') ?? true });
+  app.enableCors({ origin: configService.get('CORS_ORIGIN') || true });
   app.enableVersioning({
     type: VersioningType.URI,
     defaultVersion: '1',

@@ -1,8 +1,10 @@
 import { NestFactory } from '@nestjs/core';
-import { AppModule } from './app.module';
 import { ValidationPipe, VersioningType } from '@nestjs/common';
 import serverlessExpress from '@vendia/serverless-express';
 import { Callback, Context, Handler } from 'aws-lambda';
+import helmet from 'helmet';
+import { ConfigService } from '@nestjs/config';
+import { AppModule } from './app.module';
 
 let server: Handler;
 
@@ -16,8 +18,11 @@ process.on('uncaughtException', (reason) => {
 
 async function bootstrap(): Promise<Handler> {
   const app = await NestFactory.create(AppModule);
+  app.use(helmet());
   app.useGlobalPipes(new ValidationPipe());
-  app.enableCors();
+  const configService: ConfigService = app.get(ConfigService);
+
+  app.enableCors({ origin: configService.get('CORS_ORIGIN') || true });
   app.enableVersioning({
     type: VersioningType.URI,
     defaultVersion: '1',
