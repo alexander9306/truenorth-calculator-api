@@ -27,7 +27,7 @@ import { Record } from './records/entities/record.entity';
     }),
     ThrottlerModule.forRoot({
       ttl: 60,
-      limit: 10,
+      limit: 100,
     }),
     JwtModule,
     UsersModule,
