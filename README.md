@@ -2,7 +2,7 @@
 
 This calculator is a backend application built with NestJS that can perform a variety of mathematical operations, including addition, subtraction, multiplication, and division. It follows best practices for application design and utilizes modern software engineering techniques to ensure efficient and reliable performance.
 
-[Demo](https://vercel.com/alexander9306/back-end-calculator-react)
+[Demo](https://react-calculator-with-records.vercel.app/)
 
 ## Routes
 
