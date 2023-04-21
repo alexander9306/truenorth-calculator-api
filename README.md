@@ -1,73 +1,82 @@
-<p align="center">
-  <a href="http://nestjs.com/" target="blank"><img src="https://nestjs.com/img/logo-small.svg" width="200" alt="Nest Logo" /></a>
-</p>
+# BackEnd Calculator API
 
-[circleci-image]: https://img.shields.io/circleci/build/github/nestjs/nest/master?token=abc123def456
-[circleci-url]: https://circleci.com/gh/nestjs/nest
+This calculator is a backend application built with NestJS that can perform a variety of mathematical operations, including addition, subtraction, multiplication, and division. It follows best practices for application design and utilizes modern software engineering techniques to ensure efficient and reliable performance.
 
-  <p align="center">A progressive <a href="http://nodejs.org" target="_blank">Node.js</a> framework for building efficient and scalable server-side applications.</p>
-    <p align="center">
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/v/@nestjs/core.svg" alt="NPM Version" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/l/@nestjs/core.svg" alt="Package License" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/dm/@nestjs/common.svg" alt="NPM Downloads" /></a>
-<a href="https://circleci.com/gh/nestjs/nest" target="_blank"><img src="https://img.shields.io/circleci/build/github/nestjs/nest/master" alt="CircleCI" /></a>
-<a href="https://coveralls.io/github/nestjs/nest?branch=master" target="_blank"><img src="https://coveralls.io/repos/github/nestjs/nest/badge.svg?branch=master#9" alt="Coverage" /></a>
-<a href="https://discord.gg/G7Qnnhy" target="_blank"><img src="https://img.shields.io/badge/discord-online-brightgreen.svg" alt="Discord"/></a>
-<a href="https://opencollective.com/nest#backer" target="_blank"><img src="https://opencollective.com/nest/backers/badge.svg" alt="Backers on Open Collective" /></a>
-<a href="https://opencollective.com/nest#sponsor" target="_blank"><img src="https://opencollective.com/nest/sponsors/badge.svg" alt="Sponsors on Open Collective" /></a>
-  <a href="https://paypal.me/kamilmysliwiec" target="_blank"><img src="https://img.shields.io/badge/Donate-PayPal-ff3f59.svg"/></a>
-    <a href="https://opencollective.com/nest#sponsor"  target="_blank"><img src="https://img.shields.io/badge/Support%20us-Open%20Collective-41B883.svg" alt="Support us"></a>
-  <a href="https://twitter.com/nestframework" target="_blank"><img src="https://img.shields.io/twitter/follow/nestframework.svg?style=social&label=Follow"></a>
-</p>
-  <!--[![Backers on Open Collective](https://opencollective.com/nest/backers/badge.svg)](https://opencollective.com/nest#backer)
-  [![Sponsors on Open Collective](https://opencollective.com/nest/sponsors/badge.svg)](https://opencollective.com/nest#sponsor)-->
+## Routes
 
-## Description
-
-[Nest](https://github.com/nestjs/nest) framework TypeScript starter repository.
-
-## Installation
+The following API routes are available:
 
 ```bash
-$ npm install
+- POST /v1/auth/login
+- POST /v1/auth/signup
+- GET /v1/operations
+- POST /v1/operations
+- GET /v1/operations/balance
+- GET /v1/records
+- GET /v1/records/:id
+- DELETE /v1/records/:id
+- GET /v1/users
+- GET /v1/users/info
+- PATCH /v1/users/activate/:id
+- PATCH /v1/users/deactivate/:id
+- PUT /v1/users/password
+
 ```
 
-## Running the app
+## Environment Variables
+
+The following environment variables are required to run the application:
+
+```diff
+- PG_CONNECTION_STRING
+# You need a developer account in random.org for this.
+- RANDOM_ORG_API_KEY
+```
+
+The following environment variables are optional:
+
+```diff
+- JWT_SECRET
+- JWT_EXPIRATION_TIME
+- DEFAULT_BALANCE
+- NODE_ENV
+- PORT
+```
+
+To add environment variables, create a `.env` file at the root of the project.
+
+## Installation and Usage
+
+To install the application, run:
 
 ```bash
-# development
-$ npm run start
-
-# watch mode
-$ npm run start:dev
-
-# production mode
-$ npm run start:prod
+npm install
 ```
 
-## Test
+To run the application in development mode, run:
 
 ```bash
-# unit tests
-$ npm run test
-
-# e2e tests
-$ npm run test:e2e
-
-# test coverage
-$ npm run test:cov
+npm run start:dev
 ```
 
-## Support
+Or, for webpack hot reload feature:
 
-Nest is an MIT-licensed open source project. It can grow thanks to the sponsors and support by the amazing backers. If you'd like to join them, please [read more here](https://docs.nestjs.com/support).
+```bash
+npm run start:hot
+```
 
-## Stay in touch
+To build the application for a serverless environment, run:
 
-- Author - [Kamil Myśliwiec](https://kamilmysliwiec.com)
-- Website - [https://nestjs.com](https://nestjs.com/)
-- Twitter - [@nestframework](https://twitter.com/nestframework)
+```bash
+npm run build:sls
+```
+
+By default, the application starts at port 3000. You can change this by setting the PORT environment variable.
+
+This application is developed to use Postgres as the database, so you need an active Postgres server running to use it. After you add the environment variable `PG_CONNECTION_STRING` with your connection string (in this format: `postgres[ql]://[username[:password]@][host[:port],]/database[?parameter_list]`), run `npm run schema:sync` to sync the database schema and later `npm run migration:run` to seed the database information.
+
+All endpoints are versioned, and the current version is v1. So, for example, if you're running the app from `http://localhost:3000`, the endpoint for login will be `http://localhost:3000/v1/auth/login`.
 
 ## License
 
-Nest is [MIT licensed](LICENSE).
+This project is licensed under the [MIT License](https://opensource.org/licenses/MIT).
