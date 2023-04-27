@@ -28,7 +28,7 @@ export class UsersService {
     return this.userRepository.findOneBy({ username });
   }
 
-  async updateStatus(id: number, status: StatusEnum) {
+  updateStatus(id: number, status: StatusEnum) {
     const user = new User();
     user.id = id;
     user.status = status;
