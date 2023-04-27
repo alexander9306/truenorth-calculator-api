@@ -7,7 +7,7 @@ import { RecordRepository } from './record.repository';
 
 @Module({
   imports: [TypeOrmModule.forFeature([Record])],
-  exports: [TypeOrmModule],
+  exports: [RecordRepository],
   controllers: [RecordsController],
   providers: [RecordsService, RecordRepository],
 })

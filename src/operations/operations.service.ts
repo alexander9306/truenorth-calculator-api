@@ -1,7 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { CreateOperationDto } from './dto/create-operation.dto';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
 import { HttpService } from '@nestjs/axios';
 import { OperationTypeEnum } from './entities/operation.entity';
 import { User } from 'src/users/entities/user.entity';
@@ -11,6 +10,7 @@ import { OperationQueryOptionsDto } from './dto/operation-query-options.dto';
 import { RandomAPIResponse } from './interfaces/random-api-response.interface';
 import { RandomAPIOptions } from './interfaces/random-api-options.interface';
 import { OperationRepository } from './operation.repository';
+import { RecordRepository } from 'src/records/record.repository';
 
 @Injectable()
 export class OperationsService {
@@ -18,11 +18,8 @@ export class OperationsService {
     @InjectRepository(OperationRepository)
     private operationRepository: OperationRepository,
 
-    @InjectRepository(User)
-    private userRepository: Repository<User>,
-
-    @InjectRepository(Record)
-    private recordRepository: Repository<Record>,
+    @InjectRepository(RecordRepository)
+    private recordRepository: RecordRepository,
 
     private httpService: HttpService,
   ) {}
@@ -77,11 +74,11 @@ export class OperationsService {
   }
 
   async getCurrentBalance(userId: number) {
-    const user = await this.userRepository.findOneBy({ id: userId });
-
     const lastRecord = await this.recordRepository.findOne({
       where: {
-        user,
+        user: {
+          id: userId,
+        },
       },
       order: {
         date: 'DESC',

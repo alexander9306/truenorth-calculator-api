@@ -3,18 +3,12 @@ import { HttpModule } from '@nestjs/axios';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { OperationsService } from './operations.service';
 import { OperationsController } from './operations.controller';
-import { UsersModule } from 'src/users/users.module';
 import { RecordsModule } from 'src/records/records.module';
 import { Operation } from './entities/operation.entity';
 import { OperationRepository } from './operation.repository';
 
 @Module({
-  imports: [
-    UsersModule,
-    RecordsModule,
-    HttpModule,
-    TypeOrmModule.forFeature([Operation]),
-  ],
+  imports: [RecordsModule, HttpModule, TypeOrmModule.forFeature([Operation])],
   controllers: [OperationsController],
   providers: [OperationsService, OperationRepository],
 })
