@@ -1,22 +1,22 @@
 import { Injectable } from '@nestjs/common';
 import { CreateOperationDto } from './dto/create-operation.dto';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Like, Repository } from 'typeorm';
+import { Repository } from 'typeorm';
 import { HttpService } from '@nestjs/axios';
-import { Operation, OperationTypeEnum } from './entities/operation.entity';
+import { OperationTypeEnum } from './entities/operation.entity';
 import { User } from 'src/users/entities/user.entity';
 import { Record } from 'src/records/entities/record.entity';
 import { InsufficientBalanceException } from 'src/errors/exceptions/insufficient-balance.exception';
 import { OperationQueryOptionsDto } from './dto/operation-query-options.dto';
-import { CollectionResultDto } from 'src/shared/dto/collection-result.dto';
 import { RandomAPIResponse } from './interfaces/random-api-response.interface';
 import { RandomAPIOptions } from './interfaces/random-api-options.interface';
+import { OperationRepository } from './operation.repository';
 
 @Injectable()
 export class OperationsService {
   constructor(
-    @InjectRepository(Operation)
-    private operationRepository: Repository<Operation>,
+    @InjectRepository(OperationRepository)
+    private operationRepository: OperationRepository,
 
     @InjectRepository(User)
     private userRepository: Repository<User>,
@@ -94,72 +94,8 @@ export class OperationsService {
     };
   }
 
-  async findAll({
-    pageNumber,
-    pageSize,
-    sortField,
-    sortDirection,
-    filterValue,
-    filterField,
-  }: OperationQueryOptionsDto): Promise<CollectionResultDto<Operation>> {
-    const where = filterValue
-      ? this.getFilterCondition(filterValue, filterField)
-      : {};
-
-    const sortColumn = {};
-    sortColumn[sortField] = sortDirection;
-
-    const skip = (pageNumber - 1) * pageSize;
-
-    // TODO: Change implementation to Query builder so I can request data and count in one call, also for further improvement in the search queries.
-    const [data, count] = await Promise.all([
-      this.operationRepository.find({
-        where,
-        skip,
-        take: pageSize,
-        order: sortColumn,
-      }),
-      this.operationRepository.count({ where }),
-    ]);
-
-    const totalPages = Math.ceil(count / pageSize);
-
-    return {
-      data,
-      pageNumber,
-      count,
-      totalPages,
-    };
-  }
-
-  private getFilterCondition(
-    filterValue: string,
-    filterField?: keyof Operation,
-  ) {
-    const where = {};
-
-    switch (filterField) {
-      case 'id':
-      case 'cost':
-        const value = parseInt(filterValue, 10);
-        if (isNaN(value)) break;
-
-        where[filterField] = value;
-        break;
-      case 'type':
-        const type = Object.values(OperationTypeEnum).find(
-          (v) => v === (filterValue.toLowerCase() as any),
-        );
-        if (!type) break;
-
-        where[filterField] = type;
-        break;
-      default:
-        where[filterField] = Like(`%${filterValue}%`);
-        break;
-    }
-
-    return where;
+  async findAll(query: OperationQueryOptionsDto) {
+    return this.operationRepository.findAndCountAll(query);
   }
 
   private calculateNewBalance(cost: number, lastUserBalance?: number) {

@@ -39,6 +39,7 @@ The following environment variables are optional:
 
 ```diff
 - JWT_SECRET
+- DATABASE_LOGGING
 - JWT_EXPIRATION_TIME
 - DEFAULT_BALANCE
 - NODE_ENV

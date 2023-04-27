@@ -1,15 +1,15 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { UsersService } from './users.service';
-import { Repository } from 'typeorm';
 import { User } from './entities/user.entity';
-import { getRepositoryToken } from '@nestjs/typeorm';
 import { UserQueryOptionsDto } from './dto/user-query-options.dto';
 import { CollectionResultDto } from 'src/shared/dto/collection-result.dto';
 import { StatusEnum } from 'src/shared/enums/status.enum';
 import * as bcryptjs from 'bcryptjs';
+import { UserRepository } from './user.repository';
 
 // Mock the UserRepository
 const mockUserRepository = () => ({
+  findAndCountAll: jest.fn(),
   find: jest.fn(),
   count: jest.fn(),
   findOneBy: jest.fn(),
@@ -19,21 +19,21 @@ const mockUserRepository = () => ({
 jest.mock('bcryptjs');
 describe('UsersService', () => {
   let userService: UsersService;
-  let userRepository: Repository<User>;
+  let userRepository: UserRepository;
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
       providers: [
         UsersService,
         {
-          provide: getRepositoryToken(User),
+          provide: UserRepository,
           useFactory: mockUserRepository,
         },
       ],
     }).compile();
 
     userService = module.get<UsersService>(UsersService);
-    userRepository = module.get<Repository<User>>(getRepositoryToken(User));
+    userRepository = module.get<UserRepository>(UserRepository);
   });
 
   it('should be defined', () => {
@@ -54,8 +54,16 @@ describe('UsersService', () => {
       const count = users.length;
       const totalPages = 1;
 
-      (userRepository as any).find.mockResolvedValue(users);
-      (userRepository as any).count.mockResolvedValue(count);
+      const collectionResult: CollectionResultDto<User> = {
+        data: users,
+        pageNumber: 1,
+        count,
+        totalPages,
+      };
+
+      (userRepository as any).findAndCountAll.mockResolvedValue(
+        collectionResult,
+      );
 
       const queryOptions: UserQueryOptionsDto = {
         pageNumber: 1,
@@ -64,23 +72,10 @@ describe('UsersService', () => {
         sortDirection: 'ASC',
       };
 
-      const result: CollectionResultDto<User> = await userService.findAll(
-        queryOptions,
-      );
+      const result = await userService.findAll(queryOptions);
 
-      expect(userRepository.find).toHaveBeenCalledWith({
-        where: {},
-        skip: 0,
-        take: queryOptions.pageSize,
-        order: { [queryOptions.sortField]: queryOptions.sortDirection },
-      });
-      expect(userRepository.count).toHaveBeenCalledWith({ where: {} });
-      expect(result).toEqual({
-        data: users,
-        pageNumber: queryOptions.pageNumber,
-        count,
-        totalPages,
-      });
+      expect(userRepository.findAndCountAll).toHaveBeenCalledWith(queryOptions);
+      expect(result).toEqual(collectionResult);
     });
   });
 

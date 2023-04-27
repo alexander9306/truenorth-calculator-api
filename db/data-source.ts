@@ -11,6 +11,7 @@ export const dataSourceOptions: PostgresConnectionOptions = {
   synchronize: process.env.NODE_ENV === 'development',
   entities: ['dist/**/*.entity.js'],
   migrations: ['dist/db/migrations/*.js'],
+  logging: process.env.DATABASE_LOGGING === 'true',
 };
 
 const dataSource = new DataSource(dataSourceOptions);
