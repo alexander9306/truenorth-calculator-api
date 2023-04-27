@@ -91,7 +91,7 @@ export class OperationsService {
     };
   }
 
-  async findAll(query: OperationQueryOptionsDto) {
+  findAll(query: OperationQueryOptionsDto) {
     return this.operationRepository.findAndCountAll(query);
   }
 

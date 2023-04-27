@@ -24,7 +24,7 @@ export class RecordsService {
     return this.recordRepository.save(record);
   }
 
-  async findAll(query: RecordQueryOptionsDto) {
+  findAll(query: RecordQueryOptionsDto) {
     return this.recordRepository.findAndCountAll(query);
   }
 }
