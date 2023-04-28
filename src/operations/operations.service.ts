@@ -11,6 +11,7 @@ import { RandomAPIResponse } from './interfaces/random-api-response.interface';
 import { RandomAPIOptions } from './interfaces/random-api-options.interface';
 import { OperationRepository } from './operation.repository';
 import { RecordRepository } from 'src/records/record.repository';
+import { StatusEnum } from 'src/shared/enums/status.enum';
 
 @Injectable()
 export class OperationsService {
@@ -36,27 +37,30 @@ export class OperationsService {
       type: createOperationDto.type,
     });
 
-    const lastRecord = await this.recordRepository.findOne({
-      where: {
-        user: {
-          id: user.id,
-        },
-      },
-      order: {
-        date: 'DESC',
-      },
-    });
-
     const record = new Record();
     record.operation = operation;
     record.user = user;
     record.amount = operation.cost;
     record.date = new Date();
 
-    record.user_balance = this.calculateNewBalance(
-      operation.cost,
-      lastRecord?.user_balance,
+    const userRecords = await this.recordRepository.find({
+      where: {
+        user: {
+          id: user.id,
+        },
+        status: StatusEnum.ACTIVE,
+      },
+      order: {
+        date: 'DESC',
+      },
+    });
+
+    const amountTotal = userRecords.reduce<number>(
+      (previous, current) => previous + current.amount,
+      0,
     );
+
+    record.user_balance = this.calculateNewBalance(operation.cost, amountTotal);
 
     if (createOperationDto.type === OperationTypeEnum.RANDOM_STRING) {
       const randomData = await this.getRandomString();
@@ -74,20 +78,28 @@ export class OperationsService {
   }
 
   async getCurrentBalance(userId: number) {
-    const lastRecord = await this.recordRepository.findOne({
+    const userRecords = await this.recordRepository.find({
       where: {
         user: {
           id: userId,
         },
+        status: StatusEnum.ACTIVE,
       },
       order: {
         date: 'DESC',
       },
     });
 
+    const amountTotal = userRecords.reduce<number>(
+      (previous, current) => previous + current.amount,
+      0,
+    );
+
     return {
       startedBalance: this.defaultUserBalance,
-      currentBalance: lastRecord?.user_balance ?? this.defaultUserBalance,
+      currentBalance: amountTotal
+        ? this.defaultUserBalance - amountTotal
+        : this.defaultUserBalance,
     };
   }
 
@@ -95,16 +107,17 @@ export class OperationsService {
     return this.operationRepository.findAndCountAll(query);
   }
 
-  private calculateNewBalance(cost: number, lastUserBalance?: number) {
-    if (typeof lastUserBalance === 'undefined') {
+  private calculateNewBalance(cost: number, previousCostTotal: number) {
+    if (previousCostTotal === 0) {
       return this.defaultUserBalance - cost;
     }
 
-    if (lastUserBalance - cost < 0) {
+    const newBalance = this.defaultUserBalance - (previousCostTotal + cost);
+    if (newBalance < 0) {
       throw new InsufficientBalanceException();
     }
 
-    return lastUserBalance - cost;
+    return newBalance;
   }
 
   private calculateOperationResponse({ type, num1, num2 }: CreateOperationDto) {
