@@ -24,14 +24,14 @@ export class AuthController {
   ) {}
 
   @HttpCode(HttpStatus.OK)
-  @Throttle(10, 240)
+  @Throttle(5, 240)
   @Post('login')
   signIn(@Body() { username, password }: SignInDto) {
     return this.authService.signIn(username, password);
   }
 
   @Post('signup')
-  @Throttle(10, 60)
+  @Throttle(5, 60)
   signUp(@Body() createUserDto: CreateUserDto) {
     return this.usersService.create(createUserDto);
   }
