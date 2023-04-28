@@ -73,7 +73,15 @@ export class RecordRepository extends BaseRepository<Record> {
         if (isNaN(Date.parse(filterValue))) return ['record.id=NULL'] as any;
 
         const date = new Date(filterValue);
-        return [`date <= :date`, { date }];
+        date.setHours(0, 0, 0, 0);
+
+        const nextDayDate = new Date(date);
+        nextDayDate.setDate(date.getDate() + 1);
+
+        return [
+          `date >= :date AND date <= :nextDayDate`,
+          { date, nextDayDate },
+        ];
       default:
         return [
           `CAST(record.${filterField} AS TEXT) ILIKE :filterValue`,
