@@ -2,11 +2,12 @@ import { Repository } from 'typeorm';
 import { BasePaginationOptionsDto } from './dto/base-pagination-options.dto';
 import { BasePaginationSortAndFilter } from './interfaces/base-pagination-sort-and-filter.interface';
 import { CollectionResultDto } from './dto/collection-result.dto';
+import { Node } from './entities/node.entity';
 
 type BaseDtoQuery<T> = BasePaginationOptionsDto &
   BasePaginationSortAndFilter<T>;
 
-export class BaseRepository<T> extends Repository<T> {
+export class BaseRepository<T extends Node> extends Repository<T> {
   async findAndCountAll({
     pageNumber,
     pageSize,
@@ -17,14 +18,8 @@ export class BaseRepository<T> extends Repository<T> {
   }: BaseDtoQuery<T>): Promise<CollectionResultDto<T>> {
     const queryBuilder = this.createQueryBuilder('default');
 
-    if (filterValue) {
-      queryBuilder.where(
-        `CAST(default.${filterField as string} AS TEXT) ILIKE :filterValue`,
-        {
-          filterValue: `%${filterValue}%`,
-        },
-      );
-    }
+    if (filterValue)
+      queryBuilder.where(...this.getFilterCondition(filterValue, filterField));
 
     const skip = (pageNumber - 1) * pageSize;
     queryBuilder
@@ -42,5 +37,20 @@ export class BaseRepository<T> extends Repository<T> {
       count,
       totalPages,
     };
+  }
+
+  protected getFilterCondition(
+    filterValue: string,
+    filterField: keyof T,
+  ): [string, object] {
+    switch (filterField) {
+      case 'id':
+        return [`default.id = :id`, { id: parseInt(filterValue, 10) || null }];
+      default:
+        return [
+          `CAST(default.${filterField as string} AS TEXT) ILIKE :filterValue`,
+          { filterValue: `%${filterValue}%` },
+        ];
+    }
   }
 }

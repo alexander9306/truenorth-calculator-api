@@ -4,6 +4,8 @@ import { Injectable } from '@nestjs/common';
 import { DataSource } from 'typeorm';
 import { RecordQueryOptionsDto } from './dto/record-query-options.dto';
 import { CollectionResultDto } from 'src/shared/dto/collection-result.dto';
+import { OperationTypeEnum } from 'src/operations/entities/operation.entity';
+import { StatusEnum } from 'src/shared/enums/status.enum';
 
 @Injectable()
 export class RecordRepository extends BaseRepository<Record> {
@@ -53,24 +55,32 @@ export class RecordRepository extends BaseRepository<Record> {
     }
   }
 
-  private getFilterCondition(
+  protected getFilterCondition(
     filterValue: string,
     filterField: keyof Record,
   ): [string, object] {
     switch (filterField) {
+      case 'id':
+      case 'amount':
+        return [
+          `record.${filterField} = :amount`,
+          { amount: parseInt(filterValue, 10) || null },
+        ];
       case 'user':
-        return [
-          `CAST(user.id AS TEXT) ILIKE :filterValue`,
-          { filterValue: `%${filterValue}%` },
-        ];
+        return [`user.id = :id`, { id: parseInt(filterValue, 10) || null }];
       case 'operation':
-        return [
-          `CAST(operation.type AS TEXT) ILIKE :filterValue`,
-          { filterValue: `%${filterValue}%` },
-        ];
+        if (!Object.values(OperationTypeEnum).includes(filterValue as any))
+          return ['record.id=NULL'] as any;
+
+        return [`operation.type = :type`, { type: filterValue }];
+      case 'status':
+        if (!Object.values(StatusEnum).includes(filterValue as any))
+          return ['record.id=NULL'] as any;
+
+        return [`record.status = :status`, { status: filterValue }];
       case 'date':
-        // Avoid returning results when invalid date is passed
-        if (isNaN(Date.parse(filterValue))) return ['record.id=NULL'] as any;
+        if (Number.isNaN(Date.parse(filterValue)))
+          return ['record.id=NULL'] as any;
 
         const date = new Date(filterValue);
         date.setHours(0, 0, 0, 0);
