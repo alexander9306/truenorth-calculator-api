@@ -45,7 +45,10 @@ export class BaseRepository<T extends Node> extends Repository<T> {
   ): [string, object] {
     switch (filterField) {
       case 'id':
-        return [`default.id = :id`, { id: parseInt(filterValue, 10) || null }];
+        return [
+          `default.id = :id`,
+          { id: Number.parseInt(filterValue, 10) || null },
+        ];
       default:
         return [
           `CAST(default.${filterField as string} AS TEXT) ILIKE :filterValue`,

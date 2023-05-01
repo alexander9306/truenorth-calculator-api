@@ -18,7 +18,7 @@ import { StatusEnum } from 'src/shared/enums/status.enum';
 export class OperationsService {
   // Default User Balance
   private readonly defaultUserBalance =
-    parseInt(process.env.DEFAULT_BALANCE, 10) || 150;
+    Number.parseInt(process.env.DEFAULT_BALANCE, 10) || 150;
 
   private readonly bigNumber = BigNumber;
 

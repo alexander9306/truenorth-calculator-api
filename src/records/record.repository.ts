@@ -64,10 +64,13 @@ export class RecordRepository extends BaseRepository<Record> {
       case 'amount':
         return [
           `record.${filterField} = :amount`,
-          { amount: parseInt(filterValue, 10) || null },
+          { amount: Number.parseInt(filterValue, 10) || null },
         ];
       case 'user':
-        return [`user.id = :id`, { id: parseInt(filterValue, 10) || null }];
+        return [
+          `user.id = :id`,
+          { id: Number.parseInt(filterValue, 10) || null },
+        ];
       case 'operation':
         if (!Object.values(OperationTypeEnum).includes(filterValue as any))
           return ['record.id=NULL'] as any;
