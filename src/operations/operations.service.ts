@@ -1,7 +1,8 @@
 import { Injectable } from '@nestjs/common';
-import { CreateOperationDto } from './dto/create-operation.dto';
+import BigNumber from 'bignumber.js';
 import { InjectRepository } from '@nestjs/typeorm';
 import { HttpService } from '@nestjs/axios';
+import { CreateOperationDto } from './dto/create-operation.dto';
 import { OperationTypeEnum } from './entities/operation.entity';
 import { User } from 'src/users/entities/user.entity';
 import { Record } from 'src/records/entities/record.entity';
@@ -15,6 +16,12 @@ import { StatusEnum } from 'src/shared/enums/status.enum';
 
 @Injectable()
 export class OperationsService {
+  // Default User Balance
+  private readonly defaultUserBalance =
+    parseInt(process.env.DEFAULT_BALANCE, 10) || 150;
+
+  private readonly bigNumber = BigNumber;
+
   constructor(
     @InjectRepository(OperationRepository)
     private operationRepository: OperationRepository,
@@ -23,11 +30,10 @@ export class OperationsService {
     private recordRepository: RecordRepository,
 
     private httpService: HttpService,
-  ) {}
-
-  // Default User Balance
-  private readonly defaultUserBalance =
-    parseInt(process.env.DEFAULT_BALANCE, 10) || 150;
+  ) {
+    // Set a maximum of 10 decimal places
+    this.bigNumber.set({ DECIMAL_PLACES: 10 });
+  }
 
   async create(userId: number, createOperationDto: CreateOperationDto) {
     const user = new User();
@@ -62,15 +68,10 @@ export class OperationsService {
 
     record.user_balance = this.calculateNewBalance(operation.cost, amountTotal);
 
-    if (createOperationDto.type === OperationTypeEnum.RANDOM_STRING) {
-      const randomData = await this.getRandomString();
-
-      record.operation_response = randomData;
-    } else {
-      record.operation_response = String(
-        this.calculateOperationResponse(createOperationDto),
-      );
-    }
+    record.operation_response =
+      createOperationDto.type === OperationTypeEnum.RANDOM_STRING
+        ? await this.getRandomString()
+        : this.calculateResult(createOperationDto);
 
     await this.recordRepository.save(record);
 
@@ -120,19 +121,26 @@ export class OperationsService {
     return newBalance;
   }
 
-  private calculateOperationResponse({ type, num1, num2 }: CreateOperationDto) {
+  private evaluateOperation({ type, num1, num2 }: CreateOperationDto) {
     switch (type) {
       case OperationTypeEnum.ADDITION:
-        return num1 + num2;
+        return this.bigNumber(num1).plus(num2);
       case OperationTypeEnum.SUBTRACTION:
-        return num1 - num2;
+        return this.bigNumber(num1).minus(num2);
       case OperationTypeEnum.MULTIPLICATION:
-        return num1 * num2;
+        return this.bigNumber(num1).multipliedBy(num2);
       case OperationTypeEnum.DIVISION:
-        return num1 / num2;
+        return this.bigNumber(num1).dividedBy(num2);
       case OperationTypeEnum.SQUARE_ROOT:
-        return Math.sqrt(num1);
+        return this.bigNumber(num1).squareRoot();
     }
+  }
+
+  private calculateResult(values: CreateOperationDto): string {
+    const result = this.evaluateOperation(values);
+    if (!result.isFinite()) return '∞';
+
+    return result.toString();
   }
 
   private async getRandomString() {
