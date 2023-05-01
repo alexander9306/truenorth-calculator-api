@@ -66,7 +66,7 @@ export class OperationsService {
       0,
     );
 
-    record.user_balance = this.calculateNewBalance(operation.cost, amountTotal);
+    record.user_balance = this.calculateBalance(operation.cost, amountTotal);
 
     record.operation_response =
       createOperationDto.type === OperationTypeEnum.RANDOM_STRING
@@ -108,17 +108,17 @@ export class OperationsService {
     return this.operationRepository.findAndCountAll(query);
   }
 
-  private calculateNewBalance(cost: number, previousCostTotal: number) {
+  private calculateBalance(cost: number, previousCostTotal: number) {
     if (previousCostTotal === 0) {
       return this.defaultUserBalance - cost;
     }
 
-    const newBalance = this.defaultUserBalance - (previousCostTotal + cost);
-    if (newBalance < 0) {
+    const balance = this.defaultUserBalance - (previousCostTotal + cost);
+    if (balance < 0) {
       throw new InsufficientBalanceException();
     }
 
-    return newBalance;
+    return balance;
   }
 
   private evaluateOperation({ type, num1, num2 }: CreateOperationDto) {
