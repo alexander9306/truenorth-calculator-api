@@ -30,8 +30,8 @@ export class UsersController {
   }
 
   @Get('info')
-  getUserInfo(@UserId('id') id: number) {
-    return this.usersService.findOne(id);
+  getUserInfo(@UserId() userId: number) {
+    return this.usersService.findOne(userId);
   }
 
   @Patch('deactivate/:id')
@@ -46,9 +46,9 @@ export class UsersController {
 
   @Put('password')
   changePassword(
-    @UserId() id: number,
+    @UserId() userId: number,
     @Body() updatePassDto: UpdatePasswordDto,
   ) {
-    return this.usersService.updatePassword(id, updatePassDto.password);
+    return this.usersService.updatePassword(userId, updatePassDto.password);
   }
 }

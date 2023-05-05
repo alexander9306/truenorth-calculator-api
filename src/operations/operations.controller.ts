@@ -17,10 +17,10 @@ export class OperationsController {
 
   @Post()
   async create(
-    @UserId() id: number,
+    @UserId() userId: number,
     @Body() createOperationDto: CreateOperationDto,
   ) {
-    return this.operationsService.create(id, createOperationDto);
+    return this.operationsService.create(userId, createOperationDto);
   }
 
   @Get()
@@ -32,7 +32,7 @@ export class OperationsController {
   }
 
   @Get('balance')
-  currentBalance(@UserId() id: number) {
-    return this.operationsService.getCurrentBalance(id);
+  currentBalance(@UserId() userId: number) {
+    return this.operationsService.getCurrentBalance(userId);
   }
 }
