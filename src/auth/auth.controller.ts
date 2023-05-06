@@ -6,6 +6,8 @@ import {
   HttpStatus,
   Post,
   UseInterceptors,
+  UsePipes,
+  ValidationPipe,
 } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { SignInDto } from './dto/sign-in-dto.dto';
@@ -16,6 +18,7 @@ import { Throttle } from '@nestjs/throttler';
 
 @IsPublic()
 @Controller('auth')
+@UsePipes(new ValidationPipe({ transform: true }))
 @UseInterceptors(ClassSerializerInterceptor)
 export class AuthController {
   constructor(
