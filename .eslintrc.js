@@ -17,7 +17,7 @@ module.exports = {
   },
   ignorePatterns: [
     '.eslintrc.js',
-    '.webpack.config.js',
+    '.webpack-sls.config.js',
     '.webpack-hmr.config.js',
   ],
   rules: {
