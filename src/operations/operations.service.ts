@@ -1,18 +1,16 @@
 import { Injectable } from '@nestjs/common';
 import BigNumber from 'bignumber.js';
 import { InjectRepository } from '@nestjs/typeorm';
-import { HttpService } from '@nestjs/axios';
 import { CreateOperationDto } from './dto/create-operation.dto';
 import { OperationTypeEnum } from './entities/operation.entity';
 import { User } from 'src/users/entities/user.entity';
 import { Record } from 'src/records/entities/record.entity';
 import { InsufficientBalanceException } from 'src/errors/exceptions/insufficient-balance.exception';
 import { OperationQueryOptionsDto } from './dto/operation-query-options.dto';
-import { RandomAPIResponse } from './interfaces/random-api-response.interface';
-import { RandomAPIOptions } from './interfaces/random-api-options.interface';
 import { OperationRepository } from './operation.repository';
 import { RecordRepository } from 'src/records/record.repository';
 import { StatusEnum } from 'src/shared/enums/status.enum';
+import { RandomService } from './random/random.service';
 
 @Injectable()
 export class OperationsService {
@@ -29,48 +27,29 @@ export class OperationsService {
     @InjectRepository(RecordRepository)
     private recordRepository: RecordRepository,
 
-    private httpService: HttpService,
+    private randomService: RandomService,
   ) {
     // Set a maximum of 10 decimal places
     this.bigNumber.set({ DECIMAL_PLACES: 10 });
   }
 
   async create(userId: number, createOperationDto: CreateOperationDto) {
+    const record = new Record();
     const user = new User();
     user.id = userId;
 
-    const operation = await this.operationRepository.findOneBy({
-      type: createOperationDto.type,
-    });
+    const [operation, amountTotal] = await Promise.all([
+      this.operationRepository.findOneBy({ type: createOperationDto.type }),
+      this.getAmountTotal(user.id),
+    ]);
 
-    const record = new Record();
-    record.operation = operation;
     record.user = user;
+    record.operation = operation;
     record.amount = operation.cost;
-    record.date = new Date();
-
-    const userRecords = await this.recordRepository.find({
-      where: {
-        user: {
-          id: user.id,
-        },
-        status: StatusEnum.ACTIVE,
-      },
-      order: {
-        date: 'DESC',
-      },
-    });
-
-    const amountTotal = userRecords.reduce<number>(
-      (previous, current) => previous + current.amount,
-      0,
-    );
-
     record.user_balance = this.calculateBalance(operation.cost, amountTotal);
-
     record.operation_response =
       createOperationDto.type === OperationTypeEnum.RANDOM_STRING
-        ? await this.getRandomString()
+        ? await this.randomService.generateString()
         : this.calculateResult(createOperationDto);
 
     await this.recordRepository.save(record);
@@ -78,7 +57,7 @@ export class OperationsService {
     return { result: record.operation_response };
   }
 
-  async getCurrentBalance(userId: number) {
+  async getAmountTotal(userId: number) {
     const userRecords = await this.recordRepository.find({
       where: {
         user: {
@@ -86,15 +65,16 @@ export class OperationsService {
         },
         status: StatusEnum.ACTIVE,
       },
-      order: {
-        date: 'DESC',
-      },
     });
 
-    const amountTotal = userRecords.reduce<number>(
+    return userRecords.reduce<number>(
       (previous, current) => previous + current.amount,
       0,
     );
+  }
+
+  async getUserBalance(userId: number) {
+    const amountTotal = await this.getAmountTotal(userId);
 
     return {
       startedBalance: this.defaultUserBalance,
@@ -141,26 +121,5 @@ export class OperationsService {
     if (!result.isFinite()) return '∞';
 
     return result.toString();
-  }
-
-  private async getRandomString() {
-    const options: RandomAPIOptions = {
-      jsonrpc: '2.0',
-      method: 'generateStrings',
-      params: {
-        apiKey: process.env.RANDOM_ORG_API_KEY,
-        n: 1,
-        length: 10,
-        characters: '64Nlkerxa789rtuvas1235dawer',
-      },
-      id: 42,
-    };
-
-    const { data } = await this.httpService.axiosRef.post<RandomAPIResponse>(
-      'https://api.random.org/json-rpc/2/invoke',
-      options,
-    );
-
-    return data.result.random.data[0];
   }
 }

@@ -1,6 +1,6 @@
 export interface RandomAPIOptions {
   jsonrpc: string;
-  method: string;
+  method: 'generateStrings';
   params: Params;
   id: number;
 }

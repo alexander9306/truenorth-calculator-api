@@ -33,6 +33,6 @@ export class OperationsController {
 
   @Get('balance')
   currentBalance(@UserId() userId: number) {
-    return this.operationsService.getCurrentBalance(userId);
+    return this.operationsService.getUserBalance(userId);
   }
 }
