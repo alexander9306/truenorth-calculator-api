@@ -57,22 +57,6 @@ export class OperationsService {
     return { result: record.operation_response };
   }
 
-  async getAmountTotal(userId: number) {
-    const userRecords = await this.recordRepository.find({
-      where: {
-        user: {
-          id: userId,
-        },
-        status: StatusEnum.ACTIVE,
-      },
-    });
-
-    return userRecords.reduce<number>(
-      (previous, current) => previous + current.amount,
-      0,
-    );
-  }
-
   async getUserBalance(userId: number) {
     const amountTotal = await this.getAmountTotal(userId);
 
@@ -86,6 +70,22 @@ export class OperationsService {
 
   findAll(query: OperationQueryOptionsDto) {
     return this.operationRepository.findAndCountAll(query);
+  }
+
+  private async getAmountTotal(userId: number) {
+    const userRecords = await this.recordRepository.find({
+      where: {
+        user: {
+          id: userId,
+        },
+        status: StatusEnum.ACTIVE,
+      },
+    });
+
+    return userRecords.reduce<number>(
+      (previous, current) => previous + current.amount,
+      0,
+    );
   }
 
   private calculateBalance(cost: number, previousCostTotal: number) {
