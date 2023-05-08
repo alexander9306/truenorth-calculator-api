@@ -24,7 +24,7 @@ export class RandomService {
 
   private getParams(
     method: RandomAPIOptions['method'],
-    params?: Params,
+    params?: Partial<Params>,
   ): RandomAPIOptions {
     return {
       jsonrpc: '2.0',
