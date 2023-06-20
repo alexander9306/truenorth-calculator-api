@@ -9,7 +9,7 @@ import { UserRepository } from './user.repository';
 
 @Injectable()
 export class UsersService {
-  saltOrRounds = 10;
+  private saltOrRounds = 10;
 
   constructor(
     @InjectRepository(UserRepository)
@@ -52,7 +52,7 @@ export class UsersService {
   async updatePassword(id: number, password: string) {
     const user = new User();
     user.id = id;
-    user.password = user.password = await bcryptjs.hash(
+    user.password = await bcryptjs.hash(
       password,
       this.saltOrRounds,
     );
